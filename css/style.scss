@@ -1,0 +1,14 @@
+@import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css');
+
+$font-stack: Calibri;
+$body-font: 15px;
+
+body {
+  font: $font-stack;
+  font-size: $body-font;
+  overflow: hidden;
+}
+
+#logo {
+  padding: 15px;
+}
