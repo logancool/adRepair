@@ -20,29 +20,32 @@
 
     <img id="logo" src="img/ft_logo.jpg"/>
     <div class="jumbotron vertical-center">
-            <div class-='row-fluid centered text-center'>
-                <label class="btn btn-primary center-block" for="inputFile">Browse</label>
-                <input id="inputFile" type="file" style="display:none" multiple onchange="inputFiles()"/>
+        <div class-='row-fluid centered text-center'>
+            <label class="btn btn-primary center-block" for="inputFile">Browse</label>
+            <input id="inputFile" type="file" style="display:none" multiple onchange="inputFiles()"/>
+
+        </div>
+        <div class="row">
+            <img id="check" src="img/check.png" class="center-block"/>
+
+            <div id="errors" class="text-center">
+                <div id="mainErrors"></div>
+                <div id="errorList"></div>
+                <div id="uploadMessage"></div>
+                <button id="download" class='center-block' style="display:none" onclick="download()">Download Files
+                </button>
 
             </div>
 
-
-        <img id="check" src="img/check.png" class="center-block"/>
-
-        <div id="errors" class="text-center">
-            <div id="mainErrors"></div>
-            <div id="errorList"></div>
-            <div id="uploadMessage"></div>
-            <button id="download" style="display:none" onclick="download()">Download Files</button>
-
         </div>
+
+
     </div>
 
     <div class="navbar navbar-default navbar-fixed-bottom">
         <div class="container">
-
-            <a class="navbar-btn btn pull-left">
-                <img id="question" src="img/question.png"/> Questions</a>
+            <img src="img/question.png"/>
+            <button class="navbar-btn btn pull-left" id="qBtn" data-toggle="modal" data-target="#qModal"> Questions</button>
 
             <p class="navbar-text pull-right">© 2016 - Simplicity Marketing Ltd.
                 <a href=" mailto:david.silver@flashtalking.com">david.silver@flashtalking.com</a>
@@ -50,25 +53,87 @@
         </div>
     </div>
 
-<div id="dialog" title="Manifest Properties">
-    <p id="manifestDialog">No manifest file was detected in your adfile. Please enter the width and height for the
-        adfile below:<br><br></p>
-    <table style="width:20%">
-        <tr>
-            <td>Width:</td>
-            <td><input type="text" id="input1"/></td>
-        </tr>
-        <tr>
-            <td>Height:</td>
-            <td><input type="text" id="input2"/></td>
-        </tr>
-    </table>
-</div>
-<div id="background"></div>
+    <div id="dialog" title="Manifest Properties">
+        <p id="manifestDialog">No manifest file was detected in your adfile. Please enter the width and height for the
+            adfile below:<br><br></p>
+        <table style="width:20%">
+            <tr>
+                <td>Width:</td>
+                <td><input type="text" id="input1"/></td>
+            </tr>
+            <tr>
+                <td>Height:</td>
+                <td><input type="text" id="input2"/></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="modal fade" id='qModal' role="dialog">
+
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Modal Header</h4>
+                </div>
+                <div class="modal-body">
+                    The Flashtalking Adfile Repair tool performs a series of checks and corrections on your adfile to
+                    ensure
+                    that it is compatible with the Flashtalking system.<br><br>
+                    <ul>
+                        These checks include:
+                        <li>Making sure a manifest file exists</li>
+                        <li>Detecting if there is a filename mismatch within the manifest</li>
+                        <li>Replacing any nonsecure Edge Animate calls</li>
+                        <li>Removing any unnecessary subfolders</li>
+                        <li>Finding and removing special characters in file name</li>
+                    </ul>
+                    If no manifest file is detected, the adfile repair tool will create one for you. It will first
+                    attempt to
+                    extract the dimensions from the filename. If no dimensions are found in the filename, the tool
+                    will prompt
+                    you to manually input the dimensions for that adfile.
+                    All updated files will save out to your specified download folder
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div id="background"></div>
 
 </div>
 
 <script type="text/javascript">
+    // Get the modal
+    var modal = document.getElementById('qModal');
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("qBtn");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on the button, open the modal
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
     var fileName = "";
     var mainHTML = "";
     var manifest;
@@ -651,12 +716,12 @@
     });
 
     //QUESTION ROLLOVER
-    document.getElementById("question").addEventListener("mouseenter", function () {
-        //document.getElementById("help").style.display = "block";
-    })
-    document.getElementById("question").addEventListener("mouseleave", function () {
-        //document.getElementById("help").style.display = "none";
-    })
+    //document.getElementById("question").addEventListener("mouseenter", function () {
+    //document.getElementById("help").style.display = "block";
+    //})
+    //document.getElementById("question").addEventListener("mouseleave", function () {
+    //document.getElementById("help").style.display = "none";
+    //})
 </script>
 </body>
 
