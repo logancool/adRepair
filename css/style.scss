@@ -46,6 +46,12 @@ body {
   text-decoration: none;
   cursor: pointer;
 }
+
+.has-feedback .form-control-feedback {
+  top: 0;
+  right: 15px;
+}
+
 #logo {
   padding: 15px;
 }
