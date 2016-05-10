@@ -51,6 +51,9 @@ body {
   top: 0;
   right: 15px;
 }
+.has-warning {
+  &:before { content: "\0xe800"; }
+}
 
 #logo {
   padding: 15px;

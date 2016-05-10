@@ -3,7 +3,8 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="css/style.scss">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/formvalidation/0.6.1/css/formValidation.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/formvalidation/0.6.1/css/formValidation.min.css">
     <script type="text/javascript" src="js/jszip.js"></script>
     <script type="text/javascript" src="js/FileSaver.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenMax.min.js"></script>
@@ -48,7 +49,6 @@
 
     <div class="navbar navbar-default navbar-fixed-bottom">
         <div class="container">
-            <img src="img/question.png"/>
             <button class="navbar-btn btn pull-left" id="qBtn" data-toggle="modal" data-target="#qModal"> Questions
             </button>
             <p class="navbar-text pull-right">© 2016 - Simplicity Marketing Ltd.
@@ -101,7 +101,7 @@
                     No manifest file was detected in your adfile. Please enter the width and height for the adfile
                     below:
                     <form data-toggle="validator" role="form">
-                        <div class="form-group" >
+                        <div class="form-group">
                             <div class="form-group col-sm-6">
                                 <label class="control-label">Width</label>
                                 <input type="text" class="form-control" name="manW"
@@ -110,7 +110,7 @@
 
                             <div class="form-group col-sm-6">
                                 <label class="control-label">Height</label>
-                                <input type="text"  class="form-control" name="manH"
+                                <input type="text" class="form-control" name="manH"
                                        placeholder="90" required>
                             </div>
                         </div>
@@ -124,71 +124,139 @@
 
     </div>
     <script>
-        function isIn(value, array){
-            if (array.indexOf(value) != -1){
+        //returns true if the value is in the array
+        function isIn(value, array) {
+            if (array.indexOf(value) != -1) {
                 return true;
             }
             else {
                 return false;
             }
         }
-        function isCommonSize(value){
-            var commonW = [1,88,120,120,125,160,180,234,240,250,300,336,468,728];
-            var commonH = [1,31,60,90,125,150,240,250,280,400,600];
-            if (isIn(value, commonW)){
-                return true;
-            }
-        }
-        $('#manModal').modal('show');
-        $('#manModal').formValidation({
-            framework: 'bootstrap',
-            icon: {
-                valid: 'glyphicon glyphicon-ok',
-                invalid: 'glyphicon glyphicon-remove',
-                warning: 'glyphicon giyphicon-warning-sign',
-                validating: 'glyphicon glyphicon-refresh'
-            },
-            fields: {
-                manW: {
-                    validators: {
-                        notEmpty: {
-                            message: 'A width is required'
-                        },
-                        between: {
-                            min: 1,
-                            max: 9999,
-                            message: 'The height must be a number between 1 and 9999'
-                        },
-                        integer: {
-                            min: 0,
-                            message: 'The value is not an integer',
-                            // The default separators
-                            thousandsSeparator: '',
-                            decimalSeparator: '.'
-                        }
-                    }
-                },
-                manH: {
-                    validators: {
-                        notEmpty: {
-                            message: 'A height is required'
-                        },
-                        between: {
-                            min: 1,
-                            max: 9999,
-                            message: 'The height must be a number between 1 and 9999'
-                        },
-                        integer: {
-                            min: 0,
-                            message: 'The value is not an integer',
-                            // The default separators
-                            thousandsSeparator: '',
-                            decimalSeparator: '.'
-                        }
-                    }
+
+        //returns if the width or height (dim) is a common dimension (value)
+        function isCommonDim(dim, value) {
+            if (dim == 'w'){
+                var commonW = [1, 88, 120, 120, 125, 160, 180, 234, 240, 250, 300, 336, 468, 728];
+                if (isIn(value, commonW)) {
+                    return true;
+                }
+                else {
+                    return false;
                 }
             }
-        });
+            else {
+                var commonH = [1, 31, 60, 90, 125, 150, 240, 250, 280, 400, 600];
+                if (isIn(value, commonH)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        $('#manModal').modal('show');
+        $('#manModal').formValidation({
+                    framework: 'bootstrap',
+                    icon: {
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    addOns: {
+                        mandatoryIcon: {
+                            icon: 'glyphicon giyphicon-warning-sign',
+                            message: 'This size is uncommon'
+                        }
+                    },
+                    fields: {
+                        manW: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'A width is required'
+                                },
+                                between: {
+                                    min: 1,
+                                    max: 9999,
+                                    message: 'The height must be a number between 1 and 9999'
+                                },
+                                integer: {
+                                    min: 0,
+                                    message: 'The value is not an integer',
+                                    // The default separators
+                                    thousandsSeparator: '',
+                                    decimalSeparator: '.'
+                                }
+                            }
+                        },
+                        manH: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'A height is required'
+                                },
+                                between: {
+                                    min: 1,
+                                    max: 9999,
+                                    message: 'The height must be a number between 1 and 9999'
+                                },
+                                integer: {
+                                    min: 0,
+                                    message: 'The value is not an integer',
+                                    // The default separators
+                                    thousandsSeparator: '',
+                                    decimalSeparator: '.'
+                                }
+                            }
+                        }
+                    }
+                })
+
+                // This event will be triggered when the field passes given validator
+                .on('success.validator.fv', function (e, data) {
+
+                    W = 0; // the width element index
+                    H = 1; // the height element index
+
+                    //The live value of the users input
+                    inputW = parseInt(data.element[0].value);
+
+                    console.log(inputW + " : " + isCommonDim(inputW));
+                    //check if warning for manW field
+                    if (data.field === 'manW'){
+                            if (!(isCommonDim('w', inputW))){
+                                // The userName field passes the remote validator
+                                data.element                    // Get the field element
+                                        .closest('.form-group')     // Get the field parent
+
+                                        // Add has-warning class
+                                        .removeClass('has-success')
+                                        .addClass('has-warning')
+                            }
+                            //reset to green
+                            else {
+                                // The userName field passes the remote validator
+                                data.element                    // Get the field element
+                                        .closest('.form-group')     // Get the field parent
+
+                                        // Add has-warning class
+                                        .removeClass('has-warning')
+                                        .addClass('has-success')
+                            }
+                    }
+                })
+                // This event will be triggered when the field doesn't pass given validator
+                .on('err.validator.fv', function (e, data) {
+                    // We need to remove has-warning class
+                    // when the field doesn't pass any validator
+                    if (data.field === 'manW') {
+                        data.element
+                                .closest('.form-group')
+                                .removeClass('has-warning')
+                                .addClass('has-success')
+                    }
+                })
 
     </script>
     <script type="text/javascript">
