@@ -23,7 +23,10 @@
 
 <div class="container">
 
+    <!-- Top Logo -->
     <img id="logo" src="img/ft_logo.jpg"/>
+
+    <!-- Body -->
     <div class="jumbotron vertical-center">
         <div class-='row-fluid centered text-center'>
             <label class="btn btn-primary center-block" for="inputFile">Browse</label>
@@ -47,6 +50,7 @@
 
     </div>
 
+    <!-- Footer -->
     <div class="navbar navbar-default navbar-fixed-bottom">
         <div class="container">
             <button class="navbar-btn btn pull-left" id="qBtn" data-toggle="modal" data-target="#qModal"> Questions
@@ -57,7 +61,7 @@
         </div>
     </div>
 
-
+    <!-- Questions Modal Layout -->
     <div class="modal fade" id='qModal' role="dialog">
 
         <div class="modal-dialog">
@@ -92,7 +96,7 @@
         </div>
     </div>
 
-
+    <!-- Manifest Modal Layout -->
     <div class="modal fade" id="manModal" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -123,168 +127,176 @@
         </div>
 
     </div>
-    <script>
-        //returns true if the value is in the array
-        function isIn(value, array) {
-            if (array.indexOf(value) != -1) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
 
-        //returns if the width or height (dim) is a common dimension (value)
-        function isCommonDim(dim, value) {
-            if (dim == 'w'){
-                var commonW = [1, 88, 120, 120, 125, 160, 180, 234, 240, 250, 300, 336, 468, 728];
-                if (isIn(value, commonW)) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            else {
-                var commonH = [1, 31, 60, 90, 125, 150, 240, 250, 280, 400, 600];
-                if (isIn(value, commonH)) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        }
-
-        $('#manModal').modal('show');
-        $('#manModal').formValidation({
-                    framework: 'bootstrap',
-                    icon: {
-                        valid: 'glyphicon glyphicon-ok',
-                        invalid: 'glyphicon glyphicon-remove',
-
-                        validating: 'glyphicon glyphicon-refresh'
-                    },
-                    addOns: {
-                        mandatoryIcon: {
-                            icon: 'glyphicon giyphicon-warning-sign',
-                            message: 'This size is uncommon'
-                        }
-                    },
-                    fields: {
-                        manW: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'A width is required'
-                                },
-                                between: {
-                                    min: 1,
-                                    max: 9999,
-                                    message: 'The height must be a number between 1 and 9999'
-                                },
-                                integer: {
-                                    min: 0,
-                                    message: 'The value is not an integer',
-                                    // The default separators
-                                    thousandsSeparator: '',
-                                    decimalSeparator: '.'
-                                }
-                            }
-                        },
-                        manH: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'A height is required'
-                                },
-                                between: {
-                                    min: 1,
-                                    max: 9999,
-                                    message: 'The height must be a number between 1 and 9999'
-                                },
-                                integer: {
-                                    min: 0,
-                                    message: 'The value is not an integer',
-                                    // The default separators
-                                    thousandsSeparator: '',
-                                    decimalSeparator: '.'
-                                }
-                            }
-                        }
-                    }
-                })
-
-                // This event will be triggered when the field passes given validator
-                .on('success.validator.fv', function (e, data) {
-
-                    W = 0; // the width element index
-                    H = 1; // the height element index
-
-                    //The live value of the users input
-                    inputW = parseInt(data.element[0].value);
-
-                    console.log(inputW + " : " + isCommonDim(inputW));
-                    //check if warning for manW field
-                    if (data.field === 'manW'){
-                            if (!(isCommonDim('w', inputW))){
-                                // The userName field passes the remote validator
-                                data.element                    // Get the field element
-                                        .closest('.form-group')     // Get the field parent
-
-                                        // Add has-warning class
-                                        .removeClass('has-success')
-                                        .addClass('has-warning')
-                            }
-                            //reset to green
-                            else {
-                                // The userName field passes the remote validator
-                                data.element                    // Get the field element
-                                        .closest('.form-group')     // Get the field parent
-
-                                        // Add has-warning class
-                                        .removeClass('has-warning')
-                                        .addClass('has-success')
-                            }
-                    }
-                })
-                // This event will be triggered when the field doesn't pass given validator
-                .on('err.validator.fv', function (e, data) {
-                    // We need to remove has-warning class
-                    // when the field doesn't pass any validator
-                    if (data.field === 'manW') {
-                        data.element
-                                .closest('.form-group')
-                                .removeClass('has-warning')
-                                .addClass('has-success')
-                    }
-                })
-
-    </script>
     <script type="text/javascript">
-        // Get the modal
-        var modal = document.getElementById('qModal');
 
-        // Get the button that opens the modal
-        var btn = document.getElementById("qBtn");
+        //Create Mainfest Modal
+        function createManModal() {
+            // Get the modal
+            var modal = document.getElementById('qModal');
 
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
+            // Get the button that opens the modal
+            var btn = document.getElementById("qBtn");
 
-        // When the user clicks on the button, open the modal
-        btn.onclick = function () {
-            modal.style.display = "block";
-        }
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
 
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function () {
-            modal.style.display = "none";
-        }
+            // When the user clicks on the button, open the modal
+            btn.onclick = function () {
+                modal.style.display = "block";
+            }
 
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function (event) {
-            if (event.target == modal) {
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function () {
                 modal.style.display = "none";
             }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
         }
+
+        //Validate Manifest Dimensions
+        function valManDims() {
+
+            //returns true if the value is in the array
+            function isIn(value, array) {
+                if (array.indexOf(value) != -1) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+
+            //returns if the width or height (dim) is a common dimension (value)
+            function isCommonDim(dim, value) {
+                if (dim == 'manW') {
+                    var commonW = [1, 88, 120, 120, 125, 160, 180, 234, 240, 250, 300, 336, 468, 728];
+                    if (isIn(value, commonW)) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else if (dim == 'manH') {
+                    var commonH = [1, 31, 60, 90, 125, 150, 240, 250, 280, 400, 600];
+                    if (isIn(value, commonH)) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else return false;
+            }
+
+            $('#manModal').formValidation({
+                framework: 'bootstrap',
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    manW: {
+                        validMessage: 'Warning: the value entered is an uncommon width',
+                        validators: {
+                            notEmpty: {
+                                message: 'A width is required'
+                            },
+                            between: {
+                                min: 1,
+                                max: 9999,
+                                message: 'The width must be a number between 1 and 9999'
+                            },
+                            integer: {
+                                min: 0,
+                                message: 'The value is not an integer',
+                                // The default separators
+                                thousandsSeparator: '',
+                                decimalSeparator: '.'
+                            }
+                        }
+                    },
+                    manH: {
+                        validMessage: 'Warning: the value entered is an uncommon height',
+                        validators: {
+                            notEmpty: {
+                                message: 'A height is required'
+                            },
+                            between: {
+                                min: 1,
+                                max: 9999,
+                                message: 'The height must be a number between 1 and 9999'
+                            },
+                            integer: {
+                                min: 0,
+                                message: 'The value is not an integer',
+                                // The default separators
+                                thousandsSeparator: '',
+                                decimalSeparator: '.'
+                            },
+                            // The warning message
+                            warning: {
+                                message: 'Warning: the value entered is an uncommon height'
+                            }
+                        }
+                    }
+                }
+            });
+            // This event will be triggered when the field passes given validator
+            $('#manModal').on('success.field.fv', function (e, data) {
+
+                // Mark the field as invalid
+                function addWarning(data) {
+                    data.element
+                            .closest('.form-group')
+                            .removeClass('has-success')
+                            .addClass('has-warning help-block validMessage')
+                    //add message
+                    var $span = $('<small/>')
+                            .attr('data-field', data.field)
+                            .insertAfter(data.element);
+                    // Retrieve the valid message via getOptions()
+                    var message = data.bv.getOptions(data.field).validMessage;
+
+                    if (message) {
+                        $span.html(message);
+                    }
+                }
+
+                function removeWarning(data) {
+                    data.element     // Get the field element
+                            .closest('.form-group')     // Get the field parent
+                            .removeClass('has-warning help-block validMessage') //remove the warning
+                            .addClass('has-success') // add success!
+                }
+
+                //The live value of the users input
+                var input = parseInt(data.element[0].value);
+
+                //check if there's warnings for either field
+                if (!(isCommonDim(data.field, input))) {
+                    // The width is not common - add warning
+                    addWarning(data);
+                }
+                //reset to green
+                else {
+                    removeWarning(data);
+                }
+            });
+        }
+
+        //Display Manifest Modal
+        $('#manModal').modal('show');
+        createManModal();
+        valManDims();
 
         var fileName = "";
         var mainHTML = "";
