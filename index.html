@@ -127,782 +127,647 @@
         </div>
 
     </div>
+</div>
 
-    <script type="text/javascript">
+</body>
+</html>
 
-        //Create Mainfest Modal
-        function createManModal() {
-            // Get the modal
-            var modal = document.getElementById('qModal');
+<script type="text/javascript">
 
-            // Get the button that opens the modal
-            var btn = document.getElementById("qBtn");
 
-            // Get the <span> element that closes the modal
-            var span = document.getElementsByClassName("close")[0];
+    //////-----START----//////
 
-            // When the user clicks on the button, open the modal
-            btn.onclick = function () {
-                modal.style.display = "block";
+    //call inputFiles when files are loaded
+    document.getElementById('inputZips').addEventListener('change', inputFiles, false);
+
+    document.getElementById("check").style.opacity = 0;
+    document.getElementById("errorList").innerHTML = "";
+    document.getElementById("mainErrors").innerHTML = "";
+    document.getElementById("uploadMessage").innerHTML = "";
+    document.getElementById("check").style.opacity = 0;
+    document.getElementById("errorList").style.opacity = 0;
+    document.getElementById("mainErrors").style.opacity = 0;
+    document.getElementById("uploadMessage").style.opacity = 0;
+    document.getElementById("download").style.display = "none";
+    document.getElementById("download").style.opacity = 0;
+
+
+    /**
+     * stores the file list and runs the repair
+     */
+
+    function inputFiles(input) {
+
+        //store the list of files as fileList
+        var fileList = input.target.files;
+
+        //run the repair system
+        runAdRepair(fileList);
+
+        resetVars();
+
+    }
+
+    function runAdRepair(fileList) {
+        //for each file in the list
+        for (var i = 0; i < fileList.length; i++) {
+            //set current filename
+            var file = fileList[i];
+            var filename = fileList[i].name;
+
+
+            // use a callback to wait for files to be loaded.
+            var zFiles = getZipFiles(file, function (zFiles) {
+                return zFiles;
+            });
+
+
+        }
+    }
+
+    /**
+     * @param file - the file to be unziped
+     * @returns a file list inside the zipfile
+     */
+    function getZipFiles(file, callback) {
+
+        //confirm is zip before trying to unzip
+        if (getFileExt(file.name) == 'zip') {
+
+            //variable holder for zip file list
+            var zFiles = [];
+
+            //initial and load file reader
+            var reader = new FileReader();
+            reader.onload = function (e) {
+
+                var zFList = new JSZip(e.target.result);
+
+                for (var i in zFList.files) {
+
+                    //Zip file object
+                    var fInZip = zFlist.files[i];
+
+                    //Push each file into an array called files
+                    zFiles.push(fInZip);
+
+                    //GET FILENAME
+                    var slash = fInZip.name.lastIndexOf("/");
+                    var file_name = fInZip.name.substring(slash + 1);
+
+                    isManifest(file_name);
+                    isFLA(fInZip);
+                    hasOSXFolder(fInZip);
+
+                }
+
+            };
+            callback(zFiles);
+        }
+        ;
+        reader.readAsArrayBuffer(file);
+    }
+
+    // ---- HELPERS -- //
+
+    /**
+     * Helper function returning the file ext string
+     */
+
+    function getFileExt(filename) {
+        return filename.split('.').pop();
+    }
+
+    /**
+     * @returns true if the file is called manifest.js
+     */
+    function isManifest(file_name) {
+        return (file_name == "manifest.js");
+    }
+
+    /**
+     * @returns true if the file is an fla
+     */
+    function isFLA(fInZip) {
+        //Check for FLA
+        return (fInZip.name.lastIndexOf(".fla") > -1);
+    }
+
+    /**
+     * returns true if the file is a hidden MACOSX folder
+     */
+    function isOSXFolder(fInZip) {
+        return (!(fInZip.name.substr(fInZip.lastIndexOf("/") - 8, 8) == "__MACOSX" && macosx));
+    }
+
+    function ishtmlAnimateCall(fInZip) {
+
+        var htmlText = fInZip.asText();
+
+        //confirm the file is an html and there is a slash in it
+        if ((fInZip.name.split('.').pop() == "html") && (htmlText.lastIndexOf("/") > -1)) {
+            return true;
+        }
+    }
+
+    function hasAPI(fInZip) {
+        //CHECK HTML CODE FOR API
+        var htmlText = fInZip.asText();
+        if (htmlText.lastIndexOf("html5API.js") > -1) {
+            return true;
+        }
+    }
+
+    function animateCallIsSecure(fInZip) {
+        //CHECK IF EDGE ANIMATE CALL IS SECURE
+        var htmlText = fInZip.asText();
+        return (htmlText.lastIndexOf("http://animate.adobe.com/") > -1);
+    }
+
+    function replaceAnimateCall(fInZip) {
+        var end = htmlText.lastIndexOf("</html>")
+        var animateReplace = "https://animate.adobe.com/"
+        htmlText = [htmlText.slice(0, animate - 1), '"' + animateReplace, htmlText.slice(animate + animateReplace.length - 1, end + 7)].join('');
+    }
+
+    /**
+     * Removes all non A-Z, 0-9 non-sensitive chars
+     * @param filename - original string containing possible removable chars
+     * @return reformatted filename
+     */
+    function rmSpecialChars(filename, ext) {
+        //REMOVE ANY SPECIAL CHARACTERS FROM MAIN HTML
+        var str = mainHTML.substr(0, mainHTML.length - 5);
+        var tmp = str;
+        str = str.replace(/ /g, "_");
+        if (str != tmp) {
+            whiteSpace = true;
+        }
+        tmp = str;
+        str = str.replace(/[^a-zA-Z_0-9-]/g, "");
+        if (str != tmp) {
+            specialCharacters = true;
+        }
+
+        var newString = str.concat(ext);
+        return newString;
+    }
+
+    /**
+     *
+     * @param subfolder
+     */
+    function findSubFolder(subfolder) {
+        //FIND SUBFOLDER INDEX
+        if (subfolder) {
+            for (var f = 0; f < files.length; f++) {
+                if (files[f].name == subfolderName + "/") {
+                    subfolderIndex = f;
+                    break;
+                }
             }
+        }
+    }
 
-            // When the user clicks on <span> (x), close the modal
-            span.onclick = function () {
-                modal.style.display = "none";
+    function manMatchesHTML(man, html) {
+        //CHECK MANIFEST TO SEE IF NAME MATCHES HTML FILENAME
+        //-------------------------------------------------------
+        var slash = mainHTML.lastIndexOf("/");
+        htmlFile = mainHTML.substring(slash + 1);
+
+
+        if (manifestFound) {
+            manifestText = files[manifest].asText();
+            manifestFile = files[manifest].name;
+            var filename_m = manifestText.lastIndexOf("filename");
+            var html_m = manifestText.lastIndexOf(".html");
+            var end_m = manifestText.lastIndexOf("})")
+            manifestWrite = true;
+
+            var quotes = [];
+
+            for (var q = 0; q <= manifestText.length; q++) {
+                if (manifestText[q] === '"') quotes.push(q);
+                if (quotes.length == 3) {
+                    break;
+                }
             }
+            console.log("MANIFEST FILENAME: " + manifestText.substr(quotes[2] + 1, (html_m - quotes[2]) + 4))
+            if (manifestText.substr(quotes[2] + 1, (html_m - quotes[2]) + 4) != htmlFile) {
+                manifestText = [manifestText.slice(0, quotes[2] + 1), htmlFile, manifestText.slice(html_m + 5, end_m + 3)].join('');
+                fileNameMismatch = true;
+            }
+            makeZip();
 
-            // When the user clicks anywhere outside of the modal, close it
-            window.onclick = function (event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
+        }
+    }
+
+    function createManifest() {
+        //IF NO MANIFEST EXISTS CREATE ONE
+        var width = "";
+        var height = "";
+
+        var indices = [];
+        var indices2 = [];
+
+        for (var d = 0; d < fileName.length; d++) {
+            if (fileName[d] === "x") indices.push(d);
+        }
+
+        for (var c = 0; c < mainHTML.length; c++) {
+            if (mainHTML[c] === "x") indices2.push(c);
+        }
+        if (manifestFound != true) {
+            noManifestFound = true;
+            //CHECK MAIN FILE NAME FOR DIMENSIONS
+            for (x = 0; x < indices.length; x++) {
+                if (Number(fileName.substr(indices[x] - 3, 3) % 1) == 0) {
+                    width = fileName.substr(indices[x] - 3, 3);
+                }
+                //Check 2 or 3 characters past the x to determine the height
+                if (Number(fileName.substr(indices[x] + 1, 3) % 1) == 0 && fileName[indices[x] + 3] != ".") {
+                    height = fileName.substr(indices[x] + 1, 3);
+                    fileName[indices[x] + 3]
+                } else if (Number(fileName.substr(indices[x] + 1, 2) % 1) == 0) {
+                    height = fileName.substr(indices[x] + 1, 2);
+                }
+            }
+            //CHECK MAIN HTML FILE NAME FOR DIMENSIONS
+            for (var y = 0; y < indices2.length; y++) {
+                if (Number(mainHTML.substr(indices2[y] - 3, 3) % 1) == 0 && width == "") {
+                    width = mainHTML.substr(indices2[y] - 3, 3);
+                }
+                //Check 2 or 3 characters past the x to determine the height
+                if (height == "") {
+                    if (Number(mainHTML.substr(indices2[y] + 1, 3) % 1) == 0 && mainHTML[indices2[y] + 3] != ".") {
+                        height = mainHTML.substr(indices2[y] + 1, 3);
+                    } else if (Number(mainHTML.substr(indices2[y] + 1, 2) % 1) == 0) {
+                        height = mainHTML.substr(indices2[y] + 1, 2);
+                    }
+                }
+            }
+            if (width == "" && height == "") {
+                // document.getElementById("background").style.display = "block";
+                //  document.getElementById("manifestDialog").innerHTML = "No manifest file was detected in your adfile. Please enter the width and height for the adfile below:<br><br>" + fileName;
+                //  console.log("file name for manifest: " + fileName);
+                //  $("#dialog").dialog("open");
+            }
+            newManifest = 'FT.manifest({\n"filename": "' + htmlFile + '",\n"width": ' + width + ',\n"height": ' + height + ',\n"clickTagCount": 1\n});'
+        }
+    }
+
+    function makeZip() {
+
+        var zip = new JSZip();
+
+        if (subfolder != true) {
+            for (i = 0; i < files.length; i++) {
+                var fla = files[i].name.lastIndexOf(".fla");
+                if (manifestWrite == true && files[i].name == manifestFile) {
+                    zip.file(files[i].name, manifestText);
+                } else {
+                    if (files[i].name.substring(0, 8) != "__MACOSX" && files[i].name != orgHTML && files[i].name.substr(files[i].name.length - 4) != "html" && fla <= -1) {
+                        zip.file(files[i].name, files[i].asUint8Array());
+                    }
+                }
+                if (manifestFound != true) {
+                    zip.file("manifest.js", newManifest);
+                }
+            }
+        } else {
+            console.log("SUBFOLDER NAME: " + subfolderName)
+            for (i = 0; i < files.length; i++) {
+                var fla = files[i].name.lastIndexOf(".fla");
+                if (manifestWrite == true && files[i].name == manifestFile) {
+                    zip.file(files[i].name.substring(subfolderName.length + 1), manifestText);
+                } else {
+                    if (files[i].name.substr(macIndex, 8) != "__MACOSX" && files[i].name.substr(0, 8) != "__MACOSX" && files[i].name != orgHTML && files[i].name.substr(files[i].name.length - 4) != "html" && files[i].name != subfolderName + "/" && fla <= -1) {
+                        zip.file(files[i].name.substring(subfolderName.length + 1), files[i].asUint8Array());
+                    }
+
+                }
+                if (manifestFound != true) {
+                    zip.file("manifest.js", newManifest);
                 }
             }
         }
 
-        //Validate Manifest Dimensions
-        function valManDims() {
+        zip.file(mainHTML, htmlText);
 
-            //returns true if the value is in the array
-            function isIn(value, array) {
-                if (array.indexOf(value) != -1) {
+        var content = zip.generate({
+            type: "blob"
+        });
+
+        console.log("FILENAME: " + fileName)
+        // see FileSaver.js
+
+        zipArrayContent.push(content);
+        zipArrayFilename.push(fileName);
+        //saveAs(content, fileName);
+
+
+        f++;
+        var inputFile = document.getElementById("inputFile");
+        if (f < inputFile.files.length) {
+            inputFiles();
+        }
+        checkZip();
+
+    }
+
+    function checkZip() {
+        var inputFile = document.getElementById("inputFile");
+        if (inputFile.files.length == zipArrayFilename.length && generate != true) {
+            generateErrors();
+            generate = true;
+
+        }
+
+    }
+
+    function download() {
+        var inputFile = document.getElementById("inputFile");
+        for (var i = 0; i < inputFile.files.length; i++) {
+            saveAs(zipArrayContent[i], zipArrayFilename[i]);
+        }
+    }
+
+    function generateErrors() {
+
+        var errorList = document.getElementById("errorList");
+        var mainErrors = document.getElementById("mainErrors");
+        var check = document.getElementById("check");
+        var uploadMessage = document.getElementById("uploadMessage");
+        var downloadButton = document.getElementById("download");
+
+        if (subfolder) {
+            problems.push("Subfolders detected and removed");
+        }
+        if (specialCharacters) {
+            problems.push("Special characters found and removed");
+        }
+        if (whiteSpace) {
+            problems.push("Whitespaces found and removed")
+        }
+        if (noManifestFound) {
+            problems.push("No manifest file found");
+        }
+        if (fileNameMismatch) {
+            problems.push("Filename mismatch found");
+        }
+        if (nonSecureCalls) {
+            problems.push("Nonsecure Edge Animate call detected and replaced")
+        }
+        if (flaFound) {
+            problems.push("FLA file found and removed");
+        }
+
+        if (apiArray.length >= 1 && f > apiArray.length) {
+            uploadMessage.innerHTML = "Upload the following files to the <b>Base Files</b> tab:<br><br>";
+            for (var aa = 0; aa < apiArray.length; aa++) {
+                uploadMessage.innerHTML += '<span style="font-size:13px">' + apiArray[aa] + '</span><br>';
+            }
+            uploadMessage.innerHTML += "<br>Upload the following files to the <b>Standard Ads</b> tab:<br><br>";
+            for (var aa = 0; aa < nonApiArray.length; aa++) {
+                uploadMessage.innerHTML += '<span style="font-size:13px">' + nonApiArray[aa] + '</span><br>';
+            }
+            uploadMessage.innerHTML += "<br>"
+        }
+        if (apiArray.length > 1 && f == apiArray.length) {
+            uploadMessage.innerHTML = "Please upload your files to the <b>Base Files</b> tab";
+        }
+        if (apiArray.length == 1 && f == 1) {
+            uploadMessage.innerHTML = "Please upload your file to the <b>Base Files</b> tab";
+        }
+        if (apiArray.length < 1) {
+            if (f > 1) {
+                uploadMessage.innerHTML = "Please upload your files to the <b>Standard Ads</b> tab";
+            } else {
+                uploadMessage.innerHTML = "Please upload your file to the <b>Standard Ads</b> tab";
+            }
+        }
+
+
+        TweenLite.to(check, 1, {
+            alpha: 1,
+            ease: Power2.easeOut
+        });
+        TweenLite.to(check, .8, {
+            scaleX: 0,
+            ease: Power4.easeIn,
+            delay: .2
+        });
+        TweenLite.to(check, .5, {
+            scaleX: 1,
+            ease: Power4.easeOut,
+            delay: 1
+        });
+        TweenLite.to(mainErrors, .5, {
+            alpha: 1,
+            delay: 1
+        });
+        TweenLite.to(errorList, .5, {
+            alpha: 1,
+            delay: 1.5
+        });
+        TweenLite.to(uploadMessage, .5, {
+            alpha: 1,
+            delay: 1.8
+        });
+        if (problems.length > 0) {
+            downloadButton.style.display = "block";
+            TweenLite.to(downloadButton, .5, {
+                alpha: 1,
+                delay: 2
+            });
+        }
+
+        checkAnimated = true;
+
+        if (problems.length == 1) {
+            mainErrors.innerHTML += problems.length + " issue detected and resolved<br><b>";
+        }
+        if (problems.length > 1) {
+            mainErrors.innerHTML += problems.length + " issues detected and resolved<br><b>";
+        }
+        if (problems.length <= 0) {
+            mainErrors.innerHTML += "No issues detected";
+        }
+        for (e = 0; e < problems.length; e++) {
+            errorList.innerHTML += problems[e] + "<br>";
+        }
+    }
+
+    //Create Mainfest Modal
+    function createManModal() {
+        // Get the modal
+        var modal = document.getElementById('qModal');
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("qBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on the button, open the modal
+        btn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    }
+
+    //Validate Manifest Dimensions
+    function valManDims() {
+
+        //returns true if the value is in the array
+        function isIn(value, array) {
+            if (array.indexOf(value) != -1) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        //returns if the width or height (dim) is a common dimension (value)
+        function isCommonDim(dim, value) {
+            if (dim == 'manW') {
+                var commonW = [1, 88, 120, 120, 125, 160, 180, 234, 240, 250, 300, 336, 468, 728];
+                if (isIn(value, commonW)) {
                     return true;
                 }
                 else {
                     return false;
                 }
             }
-
-            //returns if the width or height (dim) is a common dimension (value)
-            function isCommonDim(dim, value) {
-                if (dim == 'manW') {
-                    var commonW = [1, 88, 120, 120, 125, 160, 180, 234, 240, 250, 300, 336, 468, 728];
-                    if (isIn(value, commonW)) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+            else if (dim == 'manH') {
+                var commonH = [1, 31, 60, 90, 125, 150, 240, 250, 280, 400, 600];
+                if (isIn(value, commonH)) {
+                    return true;
                 }
-                else if (dim == 'manH') {
-                    var commonH = [1, 31, 60, 90, 125, 150, 240, 250, 280, 400, 600];
-                    if (isIn(value, commonH)) {
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                }
-                else return false;
-            }
-
-            $('#manModal').formValidation({
-                framework: 'bootstrap',
-                icon: {
-                    valid: 'glyphicon glyphicon-ok',
-                    invalid: 'glyphicon glyphicon-remove',
-
-                    validating: 'glyphicon glyphicon-refresh'
-                },
-                fields: {
-                    manW: {
-                        validMessage: 'Warning: the value entered is an uncommon width',
-                        validators: {
-                            notEmpty: {
-                                message: 'A width is required'
-                            },
-                            between: {
-                                min: 1,
-                                max: 9999,
-                                message: 'The width must be a number between 1 and 9999'
-                            },
-                            integer: {
-                                min: 0,
-                                message: 'The value is not an integer',
-                                // The default separators
-                                thousandsSeparator: '',
-                                decimalSeparator: '.'
-                            }
-                        }
-                    },
-                    manH: {
-                        validMessage: 'Warning: the value entered is an uncommon height',
-                        validators: {
-                            notEmpty: {
-                                message: 'A height is required'
-                            },
-                            between: {
-                                min: 1,
-                                max: 9999,
-                                message: 'The height must be a number between 1 and 9999'
-                            },
-                            integer: {
-                                min: 0,
-                                message: 'The value is not an integer',
-                                // The default separators
-                                thousandsSeparator: '',
-                                decimalSeparator: '.'
-                            },
-                            // The warning message
-                            warning: {
-                                message: 'Warning: the value entered is an uncommon height'
-                            }
-                        }
-                    }
-                }
-            });
-            // This event will be triggered when the field passes given validator
-            $('#manModal').on('success.field.fv', function (e, data) {
-
-                // Mark the field as invalid
-                function addWarning(data) {
-                    data.element
-                            .closest('.form-group')
-                            .removeClass('has-success')
-                            .addClass('has-warning help-block validMessage')
-                    //add message
-                    var $span = $('<small/>')
-                            .attr('data-field', data.field)
-                            .insertAfter(data.element);
-                    // Retrieve the valid message via getOptions()
-                    var message = data.bv.getOptions(data.field).validMessage;
-
-                    if (message) {
-                        $span.html(message);
-                    }
-                }
-
-                function removeWarning(data) {
-                    data.element     // Get the field element
-                            .closest('.form-group')     // Get the field parent
-                            .removeClass('has-warning help-block validMessage') //remove the warning
-                            .addClass('has-success') // add success!
-                }
-
-                //The live value of the users input
-                var input = parseInt(data.element[0].value);
-
-                //check if there's warnings for either field
-                if (!(isCommonDim(data.field, input))) {
-                    // The width is not common - add warning
-                    addWarning(data);
-                }
-                //reset to green
                 else {
-                    removeWarning(data);
+                    return false;
                 }
-            });
+            }
+            else return false;
         }
 
-        //Display Manifest Modal
-        //$('#manModal').modal('show');
-        createManModal();
-        valManDims();
+        $('#manModal').formValidation({
+            framework: 'bootstrap',
+            icon: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
 
-        var fileName = "";
-        var mainHTML = "";
-        var manifest;
-        var manifestFile = "";
-        var htmlText = "";
-        var manifestText = "";
-        var htmlWrite = false;
-        var manifestWrite = false;
-        var problems = [];
-        var fileCount = 0;
-        var manifestFound = false;
-        var flaFound = false;
-        var checkAnimated = false;
-        var noManifestFound = false;
-        var fileNameMismatch = false;
-        var nonSecureCalls = false;
-        var htmlFile = "";
-        var newManifest = "";
-        var macosx = false;
-        var subfolderName = "";
-        var subfolder = false;
-        var subfolderIndex = 0;
-        var macIndex = 0;
-        var checkMac = 0;
-        var orgHTML = "";
-        var specialCharacters = false;
-        var apiFound = false;
-        var files = [];
-        var f = 0;
-        var zipArrayContent = [];
-        var zipArrayFilename = [];
-        var generate = false;
-        var whiteSpace = false;
-        var apiArray = [];
-        var nonApiArray = [];
-
-        document.getElementById("check").style.opacity = 0;
-
-        function resetVars() {
-            fileNameMismatch = false;
-            nonSecureCalls = false;
-            subfolder = false;
-            specialCharacters = false;
-            generate = false;
-            whiteSpace = false;
-            f = 0;
-            files = [];
-            zipArrayContent = [];
-            zipArrayFilename = [];
-
-            //Clear problems array
-            problems = [];
-            apiArray = [];
-            nonApiArray = [];
-        }
-
-        function init() {
-            fileName = "";
-            mainHTML = "";
-            manifest;
-            manifestFile = "";
-            htmlText = "";
-            manifestText = "";
-            htmlWrite = false;
-            subfolder = false;
-            manifestWrite = false;
-            files = [];
-            fileCount = 0;
-            macosx = false;
-            subfolderName = "";
-            subfolderIndex = 0;
-            macIndex = 0;
-            checkMac = 0;
-            orgHTML = "";
-            noManifestFound = false;
-            apiFound = false;
-            subfolderError = false;
-            manifestFound = false;
-            whiteSpcae = false;
-            flaFound = false;
-
-
-            document.getElementById("errorList").innerHTML = "";
-            document.getElementById("mainErrors").innerHTML = "";
-            document.getElementById("uploadMessage").innerHTML = "";
-            document.getElementById("check").style.opacity = 0;
-            document.getElementById("errorList").style.opacity = 0;
-            document.getElementById("mainErrors").style.opacity = 0;
-            document.getElementById("uploadMessage").style.opacity = 0;
-            //document.getElementById("input1").value = "";
-            //document.getElementById("input2").value = "";
-            document.getElementById("download").style.display = "none";
-            document.getElementById("download").style.opacity = 0;
-            TweenLite.to(check, 0, {
-                alpha: 0
-            });
-            checkAnimated = false;
-            htmlFile = ""
-            newManifest = ""
-        }
-
-        /**
-         * @param files - array of files browsed by user
-         */
-
-        function detectZip(files) {
-            console.log(files);
-        }
-
-        //call inputFiles when files are loaded
-        document.getElementById('inputZips').addEventListener('change', inputFiles, false);
-
-        /**
-         * Detects when file input changes.
-         *
-         */
-        function inputFiles(input) {
-
-            //store the list of files as fileList
-            var fileList = input.target.files;
-
-            resetVars();
-
-            //initial and load file reader
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                init();
-
-                var zipFileLoaded = new JSZip(e.target.result);
-
-                var ulFilesContained = document.getElementById("ulFilesContained");
-                for (var i in zipFileLoaded.files) {
-                    var fInZip = zipFileLoaded.files[i];
-                    console.log(fInZip.name)
-
-                    //Push each file into an array called files
-                    files.push(fInZip);
-
-                    //GET FILENAME
-                    var slash = fInZip.name.lastIndexOf("/");
-                    var file_name = fInZip.name.substring(slash + 1);
-
-                    //FIND MANFIEST FILE
-                    if (file_name == "manifest.js") {
-                        manifestFound = true;
-                        manifest = fileCount;
-                    }
-
-                    //Check for FLA
-                    var fla = fInZip.name.lastIndexOf(".fla");
-                    if (fla > -1) {
-                        flaFound = true;
-                    }
-                    //Check if MACOSX folder exists
-                    // if(fInZip.name.substr(0,8) == "__MACOSX"){
-                    //     macosx = true;
-                    //     macIndex = fileCount;
-                    // }
-                    if (fInZip.name.substr(slash - 8, 8) == "__MACOSX" && macosx != true) {
-                        console.log("MACOSX FOUND")
-                        macosx = true;
-                        subfolderError = true;
-                        macIndex = slash - 8;
-                    }
-                    //CHECK MAIN HTML TO REPLACE POTENTIAL ANIMATE CALL
-                    if (fInZip.name.split('.').pop() == "html") {
-                        if (fInZip.name.substr(slash - 8, 8) != "__MACOSX" && fInZip.name.substr(macIndex, 8) != "__MACOSX") {
-                            htmlText = fInZip.asText();
-                            mainHTML = fInZip.name;
-                            orgHTML = mainHTML;
-                        }
-                        // checkMac = fInZip.name.lastIndexOf("__MACOSX");
-                        // if(checkMac<=-1){
-
-                        //  }
-                        var slash = mainHTML.lastIndexOf("/");
-                        if (slash > -1) {
-                            subfolder = true;
-                            subfolderError = true;
-                            if (fInZip.name.substr(macIndex, 8) != "__MACOSX") {
-                                subfolderName = mainHTML.substring(0, slash);
-                            }
-                            mainHTML = mainHTML.substring(slash + 1, mainHTML.length);
-                            orgHTML = mainHTML;
-                        }
-
-                        console.log("MAIN HTML: " + mainHTML)
-                        //CHECK HTML CODE FOR API
-                        var api = htmlText.lastIndexOf("html5API.js")
-                        if (api > -1) {
-                            apiFound = true;
-                        }
-                        //CHECK IF EDGE ANIMATE CALL IS SECURE
-                        var animate = htmlText.lastIndexOf("http://animate.adobe.com/");
-                        if (animate > -1) {
-                            nonSecureCalls = true;
-                            end = htmlText.lastIndexOf("</html>")
-                            var animateReplace = "https://animate.adobe.com/"
-                            htmlText = [htmlText.slice(0, animate - 1), '"' + animateReplace, htmlText.slice(animate + animateReplace.length - 1, end + 7)].join('');
-                            htmlWrite = true;
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                manW: {
+                    validMessage: 'Warning: the value entered is an uncommon width',
+                    validators: {
+                        notEmpty: {
+                            message: 'A width is required'
+                        },
+                        between: {
+                            min: 1,
+                            max: 9999,
+                            message: 'The width must be a number between 1 and 9999'
+                        },
+                        integer: {
+                            min: 0,
+                            message: 'The value is not an integer',
+                            // The default separators
+                            thousandsSeparator: '',
+                            decimalSeparator: '.'
                         }
                     }
-
-                    fileCount++;
-                }
-
-                /**
-                 * Removes all non A-Z, 0-9 non-sensitive chars
-                 * @param filename - original string containing possible removable chars
-                 * @return reformatted filename
-                 */
-                function rmSpecialChars(filename) {
-
-                }
-
-                //REMOVE ANY SPECIAL CHARACTERS FROM MAIN HTML
-                var str = mainHTML.substr(0, mainHTML.length - 5);
-                var tmp = str;
-                str = str.replace(/ /g, "_");
-                if (str != tmp) {
-                    whiteSpace = true;
-                }
-                tmp = str;
-                str = str.replace(/[^a-zA-Z_0-9-]/g, "");
-                if (str != tmp) {
-                    specialCharacters = true;
-                }
-                mainHTML = str + ".html"
-
-                //REMOVE ANY SPECIAL CHARACTERS FROM FILE NAME
-                var fileNameOrg = fileName;
-                var str = fileName.substr(0, fileName.length - 4);
-                var tmp = str;
-                str = str.replace(/ /g, "_");
-                if (str != tmp) {
-                    whiteSpace = true;
-                }
-                tmp = str;
-                str = str.replace(/[^a-zA-Z_0-9-]/g, "");
-                if (str != tmp) {
-                    specialCharacters = true;
-                }
-                fileName = str + ".zip"
-
-                if (apiFound) {
-                    apiArray.push(fileName);
-                } else {
-                    nonApiArray.push(filename);
-                }
-
-                /**
-                 *
-                 * @param subfolder
-                 */
-
-                function findSubFolder(subfolder) {
-
-                }
-
-                //FIND SUBFOLDER INDEX
-                if (subfolder) {
-                    for (var f = 0; f < files.length; f++) {
-                        if (files[f].name == subfolderName + "/") {
-                            subfolderIndex = f;
-                            break;
+                },
+                manH: {
+                    validMessage: 'Warning: the value entered is an uncommon height',
+                    validators: {
+                        notEmpty: {
+                            message: 'A height is required'
+                        },
+                        between: {
+                            min: 1,
+                            max: 9999,
+                            message: 'The height must be a number between 1 and 9999'
+                        },
+                        integer: {
+                            min: 0,
+                            message: 'The value is not an integer',
+                            // The default separators
+                            thousandsSeparator: '',
+                            decimalSeparator: '.'
+                        },
+                        // The warning message
+                        warning: {
+                            message: 'Warning: the value entered is an uncommon height'
                         }
                     }
                 }
-                //CHECK MANIFEST TO SEE IF NAME MATCHES HTML FILENAME
-                //-------------------------------------------------------
-                var slash = mainHTML.lastIndexOf("/");
-                htmlFile = mainHTML.substring(slash + 1);
-
-                console.log("HTML FILE: " + htmlFile)
-
-                if (manifestFound) {
-                    manifestText = files[manifest].asText();
-                    manifestFile = files[manifest].name;
-                    var filename_m = manifestText.lastIndexOf("filename");
-                    var html_m = manifestText.lastIndexOf(".html");
-                    var end_m = manifestText.lastIndexOf("})")
-                    manifestWrite = true;
-
-                    var quotes = [];
-
-                    for (var q = 0; q <= manifestText.length; q++) {
-                        if (manifestText[q] === '"') quotes.push(q);
-                        if (quotes.length == 3) {
-                            break;
-                        }
-                    }
-                    console.log("MANIFEST FILENAME: " + manifestText.substr(quotes[2] + 1, (html_m - quotes[2]) + 4))
-                    if (manifestText.substr(quotes[2] + 1, (html_m - quotes[2]) + 4) != htmlFile) {
-                        manifestText = [manifestText.slice(0, quotes[2] + 1), htmlFile, manifestText.slice(html_m + 5, end_m + 3)].join('');
-                        fileNameMismatch = true;
-                    }
-                    makeZip();
-
-                }
-
-                //IF NO MANIFEST EXISTS CREATE ONE
-                var width = "";
-                var height = "";
-
-                var indices = [];
-                var indices2 = [];
-
-                for (var d = 0; d < fileName.length; d++) {
-                    if (fileName[d] === "x") indices.push(d);
-                }
-
-                for (var c = 0; c < mainHTML.length; c++) {
-                    if (mainHTML[c] === "x") indices2.push(c);
-                }
-                if (manifestFound != true) {
-                    noManifestFound = true;
-                    //CHECK MAIN FILE NAME FOR DIMENSIONS
-                    for (x = 0; x < indices.length; x++) {
-                        if (Number(fileName.substr(indices[x] - 3, 3) % 1) == 0) {
-                            width = fileName.substr(indices[x] - 3, 3);
-                        }
-                        //Check 2 or 3 characters past the x to determine the height
-                        if (Number(fileName.substr(indices[x] + 1, 3) % 1) == 0 && fileName[indices[x] + 3] != ".") {
-                            height = fileName.substr(indices[x] + 1, 3);
-                            fileName[indices[x] + 3]
-                        } else if (Number(fileName.substr(indices[x] + 1, 2) % 1) == 0) {
-                            height = fileName.substr(indices[x] + 1, 2);
-                        }
-                    }
-                    //CHECK MAIN HTML FILE NAME FOR DIMENSIONS
-                    for (var y = 0; y < indices2.length; y++) {
-                        if (Number(mainHTML.substr(indices2[y] - 3, 3) % 1) == 0 && width == "") {
-                            width = mainHTML.substr(indices2[y] - 3, 3);
-                        }
-                        //Check 2 or 3 characters past the x to determine the height
-                        if (height == "") {
-                            if (Number(mainHTML.substr(indices2[y] + 1, 3) % 1) == 0 && mainHTML[indices2[y] + 3] != ".") {
-                                height = mainHTML.substr(indices2[y] + 1, 3);
-                            } else if (Number(mainHTML.substr(indices2[y] + 1, 2) % 1) == 0) {
-                                height = mainHTML.substr(indices2[y] + 1, 2);
-                            }
-                        }
-                    }
-                    if (width == "" && height == "") {
-                        // document.getElementById("background").style.display = "block";
-                        //  document.getElementById("manifestDialog").innerHTML = "No manifest file was detected in your adfile. Please enter the width and height for the adfile below:<br><br>" + fileName;
-                        //  console.log("file name for manifest: " + fileName);
-                        //  $("#dialog").dialog("open");
-                    }
-                    newManifest = 'FT.manifest({\n"filename": "' + htmlFile + '",\n"width": ' + width + ',\n"height": ' + height + ',\n"clickTagCount": 1\n});'
-                }
-
-                if (width != "" && height != "") {
-                    makeZip();
-                }
             }
-
-            reader.readAsArrayBuffer(fileList[0]);
-
-
-        }
-
-
-        function makeZip() {
-
-            var zip = new JSZip();
-
-            //SEARCH THROUGH FILES TO SEE IF SUBFOLDER EXISTS
-            // var count = 0;
-            // for (a = 0; a < files.length; a++) {
-            //     if (files[a].name.substring(0, files[0].name.length) == files[0].name) {
-            //         count++;
-            //     }
-            //     if (count == files.length) {
-            //         subfolder = true;
-            //         subfolderError = true;
-            //     }
-            // }
-
-            if (subfolder != true) {
-                for (i = 0; i < files.length; i++) {
-                    var fla = files[i].name.lastIndexOf(".fla");
-                    if (manifestWrite == true && files[i].name == manifestFile) {
-                        zip.file(files[i].name, manifestText);
-                    } else {
-                        if (files[i].name.substring(0, 8) != "__MACOSX" && files[i].name != orgHTML && files[i].name.substr(files[i].name.length - 4) != "html" && fla <= -1) {
-                            zip.file(files[i].name, files[i].asUint8Array());
-                        }
-                    }
-                    if (manifestFound != true) {
-                        zip.file("manifest.js", newManifest);
-                    }
-                }
-            } else {
-                console.log("SUBFOLDER NAME: " + subfolderName)
-                for (i = 0; i < files.length; i++) {
-                    var fla = files[i].name.lastIndexOf(".fla");
-                    if (manifestWrite == true && files[i].name == manifestFile) {
-                        zip.file(files[i].name.substring(subfolderName.length + 1), manifestText);
-                    } else {
-                        if (files[i].name.substr(macIndex, 8) != "__MACOSX" && files[i].name.substr(0, 8) != "__MACOSX" && files[i].name != orgHTML && files[i].name.substr(files[i].name.length - 4) != "html" && files[i].name != subfolderName + "/" && fla <= -1) {
-                            zip.file(files[i].name.substring(subfolderName.length + 1), files[i].asUint8Array());
-                        }
-
-                    }
-                    if (manifestFound != true) {
-                        zip.file("manifest.js", newManifest);
-                    }
-                }
-            }
-
-            zip.file(mainHTML, htmlText);
-
-            var content = zip.generate({
-                type: "blob"
-            });
-
-            console.log("FILENAME: " + fileName)
-            // see FileSaver.js
-
-            zipArrayContent.push(content);
-            zipArrayFilename.push(fileName);
-            //saveAs(content, fileName);
-
-
-            f++;
-            var inputFile = document.getElementById("inputFile");
-            if (f < inputFile.files.length) {
-                inputFiles();
-            }
-            checkZip();
-
-        }
-
-        function checkZip() {
-            var inputFile = document.getElementById("inputFile");
-            if (inputFile.files.length == zipArrayFilename.length && generate != true) {
-                generateErrors();
-                generate = true;
-
-            }
-
-        }
-
-        function download() {
-            var inputFile = document.getElementById("inputFile");
-            for (var i = 0; i < inputFile.files.length; i++) {
-                saveAs(zipArrayContent[i], zipArrayFilename[i]);
-            }
-        }
-
-
-        function generateErrors() {
-
-            var errorList = document.getElementById("errorList");
-            var mainErrors = document.getElementById("mainErrors");
-            var check = document.getElementById("check");
-            var uploadMessage = document.getElementById("uploadMessage");
-            var downloadButton = document.getElementById("download");
-
-            if (subfolder) {
-                problems.push("Subfolders detected and removed");
-            }
-            if (specialCharacters) {
-                problems.push("Special characters found and removed");
-            }
-            if (whiteSpace) {
-                problems.push("Whitespaces found and removed")
-            }
-            if (noManifestFound) {
-                problems.push("No manifest file found");
-            }
-            if (fileNameMismatch) {
-                problems.push("Filename mismatch found");
-            }
-            if (nonSecureCalls) {
-                problems.push("Nonsecure Edge Animate call detected and replaced")
-            }
-            if (flaFound) {
-                problems.push("FLA file found and removed");
-            }
-
-            if (apiArray.length >= 1 && f > apiArray.length) {
-                uploadMessage.innerHTML = "Upload the following files to the <b>Base Files</b> tab:<br><br>";
-                for (var aa = 0; aa < apiArray.length; aa++) {
-                    uploadMessage.innerHTML += '<span style="font-size:13px">' + apiArray[aa] + '</span><br>';
-                }
-                uploadMessage.innerHTML += "<br>Upload the following files to the <b>Standard Ads</b> tab:<br><br>";
-                for (var aa = 0; aa < nonApiArray.length; aa++) {
-                    uploadMessage.innerHTML += '<span style="font-size:13px">' + nonApiArray[aa] + '</span><br>';
-                }
-                uploadMessage.innerHTML += "<br>"
-            }
-            if (apiArray.length > 1 && f == apiArray.length) {
-                uploadMessage.innerHTML = "Please upload your files to the <b>Base Files</b> tab";
-            }
-            if (apiArray.length == 1 && f == 1) {
-                uploadMessage.innerHTML = "Please upload your file to the <b>Base Files</b> tab";
-            }
-            if (apiArray.length < 1) {
-                if (f > 1) {
-                    uploadMessage.innerHTML = "Please upload your files to the <b>Standard Ads</b> tab";
-                } else {
-                    uploadMessage.innerHTML = "Please upload your file to the <b>Standard Ads</b> tab";
-                }
-            }
-
-
-            TweenLite.to(check, 1, {
-                alpha: 1,
-                ease: Power2.easeOut
-            });
-            TweenLite.to(check, .8, {
-                scaleX: 0,
-                ease: Power4.easeIn,
-                delay: .2
-            });
-            TweenLite.to(check, .5, {
-                scaleX: 1,
-                ease: Power4.easeOut,
-                delay: 1
-            });
-            TweenLite.to(mainErrors, .5, {
-                alpha: 1,
-                delay: 1
-            });
-            TweenLite.to(errorList, .5, {
-                alpha: 1,
-                delay: 1.5
-            });
-            TweenLite.to(uploadMessage, .5, {
-                alpha: 1,
-                delay: 1.8
-            });
-            if (problems.length > 0) {
-                downloadButton.style.display = "block";
-                TweenLite.to(downloadButton, .5, {
-                    alpha: 1,
-                    delay: 2
-                });
-            }
-
-            checkAnimated = true;
-
-            if (problems.length == 1) {
-                mainErrors.innerHTML += problems.length + " issue detected and resolved<br><b>";
-            }
-            if (problems.length > 1) {
-                mainErrors.innerHTML += problems.length + " issues detected and resolved<br><b>";
-            }
-            if (problems.length <= 0) {
-                mainErrors.innerHTML += "No issues detected";
-            }
-            for (e = 0; e < problems.length; e++) {
-                errorList.innerHTML += problems[e] + "<br>";
-            }
-        }
-
-        var check = document.getElementById("check");
-        check.addEventListener("mouseenter", function () {
-            if (checkAnimated) {
-                TweenLite.to(check, .5, {
-                    scaleX: 0,
-                    ease: Power4.easeIn
-                });
-                TweenLite.to(check, .5, {
-                    scaleX: 1,
-                    ease: Power4.easeOut,
-                    delay: .5
-                });
-            }
-        })
-
-        //DUAL INPUT PROMPT FOR MANIFEST WIDTH AND HEIGHT
-        //document.getElementById("input1").value = "";
-        //document.getElementById("input2").value = "";
-
-        $("#dialog").dialog({
-            autoOpen: false,
-            buttons: [{
-                text: "Ok",
-                click: function () {
-                    width = document.getElementById("input1").value;
-                    height = document.getElementById("input2").value;
-                    if (width != "" && height != "") {
-                        newManifest = 'FT.manifest({\n"filename": "' + htmlFile + '",\n"width": ' + width + ',\n"height": ' + height + ',\n"clickTagCount": 1\n});'
-                        makeZip();
-                        document.getElementById("background").style.display = "none";
-
-                        $(this).dialog("close");
-                    } else {
-                        alert("Plaese enter a width and height");
-                    }
-                }
-            },]
         });
+        // This event will be triggered when the field passes given validator
+        $('#manModal').on('success.field.fv', function (e, data) {
 
-        //QUESTION ROLLOVER
-        //document.getElementById("question").addEventListener("mouseenter", function () {
-        //document.getElementById("help").style.display = "block";
-        //})
-        //document.getElementById("question").addEventListener("mouseleave", function () {
-        //document.getElementById("help").style.display = "none";
-        //})
-    </script>
-</body>
+            // Mark the field as invalid
+            function addWarning(data) {
+                data.element
+                        .closest('.form-group')
+                        .removeClass('has-success')
+                        .addClass('has-warning help-block validMessage')
+                //add message
+                var $span = $('<small/>')
+                        .attr('data-field', data.field)
+                        .insertAfter(data.element);
+                // Retrieve the valid message via getOptions()
+                var message = data.bv.getOptions(data.field).validMessage;
 
-</html>
+                if (message) {
+                    $span.html(message);
+                }
+            }
+
+            function removeWarning(data) {
+                data.element     // Get the field element
+                        .closest('.form-group')     // Get the field parent
+                        .removeClass('has-warning help-block validMessage') //remove the warning
+                        .addClass('has-success') // add success!
+            }
+
+            //The live value of the users input
+            var input = parseInt(data.element[0].value);
+
+            //check if there's warnings for either field
+            if (!(isCommonDim(data.field, input))) {
+                // The width is not common - add warning
+                addWarning(data);
+            }
+            //reset to green
+            else {
+                removeWarning(data);
+            }
+        });
+    }
+
+    //Display Manifest Modal
+
+    //$('#manModal').modal('show');
+
+    createManModal();
+
+    valManDims();
+
+
+</script>
