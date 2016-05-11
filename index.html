@@ -29,8 +29,8 @@
     <!-- Body -->
     <div class="jumbotron vertical-center">
         <div class-='row-fluid centered text-center'>
-            <label class="btn btn-primary center-block" for="inputFile">Browse</label>
-            <input id="inputFile" type="file" style="display:none" multiple onchange="inputFiles()"/>
+            <label class="btn btn-primary center-block" for="inputZips">Browse</label>
+            <input id="inputZips" type="file" style="display:none" multiple/>
 
         </div>
         <div class="row">
@@ -294,7 +294,7 @@
         }
 
         //Display Manifest Modal
-        $('#manModal').modal('show');
+        //$('#manModal').modal('show');
         createManModal();
         valManDims();
 
@@ -344,7 +344,6 @@
             generate = false;
             whiteSpace = false;
             f = 0;
-            console.log("F: " + f)
             files = [];
             zipArrayContent = [];
             zipArrayFilename = [];
@@ -388,8 +387,8 @@
             document.getElementById("errorList").style.opacity = 0;
             document.getElementById("mainErrors").style.opacity = 0;
             document.getElementById("uploadMessage").style.opacity = 0;
-            document.getElementById("input1").value = "";
-            document.getElementById("input2").value = "";
+            //document.getElementById("input1").value = "";
+            //document.getElementById("input2").value = "";
             document.getElementById("download").style.display = "none";
             document.getElementById("download").style.opacity = 0;
             TweenLite.to(check, 0, {
@@ -400,76 +399,77 @@
             newManifest = ""
         }
 
-        function inputFiles() {
+        /**
+         * @param files - array of files browsed by user
+         */
 
-            var inputFile = document.getElementById("inputFile");
-
-            console.log("F: " + f)
-
-            if (generate) {
-                console.log("RESET")
-                resetVars();
-            }
-            var file = inputFile.files[f];
-            var filename = file.name;
-            inputFile_Changed(file, filename);
+        function detectZip(files) {
+            console.log(files);
         }
 
-        function inputFile_Changed(file, filename) {
-            var zipFileToLoad = file;
-            files = new Array();
+        //call inputFiles when files are loaded
+        document.getElementById('inputZips').addEventListener('change', inputFiles, false);
 
-            var fileReader = new FileReader();
+        /**
+         * Detects when file input changes.
+         *
+         */
+        function inputFiles(input) {
 
-            fileName = filename.substr(filename.lastIndexOf("\\") + 1, filename.length);
-            console.log("fileName: " + fileName)
+            //store the list of files as fileList
+            var fileList = input.target.files;
 
-            fileReader.onload = function (fileLoadedEvent) {
+            resetVars();
+
+            //initial and load file reader
+            var reader = new FileReader();
+            reader.onload = function (e) {
                 init();
-                fileName = filename;
 
-                var zipFileLoaded = new JSZip(fileLoadedEvent.target.result);
+                var zipFileLoaded = new JSZip(e.target.result);
+
                 var ulFilesContained = document.getElementById("ulFilesContained");
-                for (var nameOfFileContainedInZipFile in zipFileLoaded.files) {
-                    var fileContainedInZipFile = zipFileLoaded.files[nameOfFileContainedInZipFile];
-                    console.log(fileContainedInZipFile.name)
+                for (var i in zipFileLoaded.files) {
+                    var fInZip = zipFileLoaded.files[i];
+                    console.log(fInZip.name)
 
                     //Push each file into an array called files
-                    files.push(fileContainedInZipFile);
+                    files.push(fInZip);
 
                     //GET FILENAME
-                    var slash = fileContainedInZipFile.name.lastIndexOf("/");
-                    var file_name = fileContainedInZipFile.name.substring(slash + 1);
+                    var slash = fInZip.name.lastIndexOf("/");
+                    var file_name = fInZip.name.substring(slash + 1);
 
                     //FIND MANFIEST FILE
                     if (file_name == "manifest.js") {
                         manifestFound = true;
                         manifest = fileCount;
                     }
+
                     //Check for FLA
-                    var fla = fileContainedInZipFile.name.lastIndexOf(".fla");
+                    var fla = fInZip.name.lastIndexOf(".fla");
                     if (fla > -1) {
                         flaFound = true;
                     }
                     //Check if MACOSX folder exists
-                    // if(fileContainedInZipFile.name.substr(0,8) == "__MACOSX"){
+                    // if(fInZip.name.substr(0,8) == "__MACOSX"){
                     //     macosx = true;
                     //     macIndex = fileCount;
                     // }
-                    if (fileContainedInZipFile.name.substr(slash - 8, 8) == "__MACOSX" && macosx != true) {
+                    if (fInZip.name.substr(slash - 8, 8) == "__MACOSX" && macosx != true) {
                         console.log("MACOSX FOUND")
                         macosx = true;
                         subfolderError = true;
                         macIndex = slash - 8;
                     }
                     //CHECK MAIN HTML TO REPLACE POTENTIAL ANIMATE CALL
-                    if (fileContainedInZipFile.name.split('.').pop() == "html") {
-                        if (fileContainedInZipFile.name.substr(slash - 8, 8) != "__MACOSX" && fileContainedInZipFile.name.substr(macIndex, 8) != "__MACOSX") {
-                            htmlText = fileContainedInZipFile.asText();
-                            mainHTML = fileContainedInZipFile.name;
+                    if (fInZip.name.split('.').pop() == "html") {
+                        if (fInZip.name.substr(slash - 8, 8) != "__MACOSX" && fInZip.name.substr(macIndex, 8) != "__MACOSX") {
+                            htmlText = fInZip.asText();
+                            mainHTML = fInZip.name;
                             orgHTML = mainHTML;
                         }
-                        // checkMac = fileContainedInZipFile.name.lastIndexOf("__MACOSX");
+                        // checkMac = fInZip.name.lastIndexOf("__MACOSX");
                         // if(checkMac<=-1){
 
                         //  }
@@ -477,7 +477,7 @@
                         if (slash > -1) {
                             subfolder = true;
                             subfolderError = true;
-                            if (fileContainedInZipFile.name.substr(macIndex, 8) != "__MACOSX") {
+                            if (fInZip.name.substr(macIndex, 8) != "__MACOSX") {
                                 subfolderName = mainHTML.substring(0, slash);
                             }
                             mainHTML = mainHTML.substring(slash + 1, mainHTML.length);
@@ -504,6 +504,14 @@
                     fileCount++;
                 }
 
+                /**
+                 * Removes all non A-Z, 0-9 non-sensitive chars
+                 * @param filename - original string containing possible removable chars
+                 * @return reformatted filename
+                 */
+                function rmSpecialChars(filename) {
+
+                }
 
                 //REMOVE ANY SPECIAL CHARACTERS FROM MAIN HTML
                 var str = mainHTML.substr(0, mainHTML.length - 5);
@@ -540,6 +548,14 @@
                     nonApiArray.push(filename);
                 }
 
+                /**
+                 *
+                 * @param subfolder
+                 */
+
+                function findSubFolder(subfolder) {
+
+                }
 
                 //FIND SUBFOLDER INDEX
                 if (subfolder) {
@@ -626,10 +642,10 @@
                         }
                     }
                     if (width == "" && height == "") {
-                        document.getElementById("background").style.display = "block";
-                        document.getElementById("manifestDialog").innerHTML = "No manifest file was detected in your adfile. Please enter the width and height for the adfile below:<br><br>" + fileName;
-                        console.log("file name for manifest: " + fileName);
-                        $("#dialog").dialog("open");
+                        // document.getElementById("background").style.display = "block";
+                        //  document.getElementById("manifestDialog").innerHTML = "No manifest file was detected in your adfile. Please enter the width and height for the adfile below:<br><br>" + fileName;
+                        //  console.log("file name for manifest: " + fileName);
+                        //  $("#dialog").dialog("open");
                     }
                     newManifest = 'FT.manifest({\n"filename": "' + htmlFile + '",\n"width": ' + width + ',\n"height": ' + height + ',\n"clickTagCount": 1\n});'
                 }
@@ -639,8 +655,7 @@
                 }
             }
 
-
-            fileReader.readAsArrayBuffer(zipFileToLoad);
+            reader.readAsArrayBuffer(fileList[0]);
 
 
         }
@@ -857,8 +872,9 @@
         })
 
         //DUAL INPUT PROMPT FOR MANIFEST WIDTH AND HEIGHT
-        document.getElementById("input1").value = "";
-        document.getElementById("input2").value = "";
+        //document.getElementById("input1").value = "";
+        //document.getElementById("input2").value = "";
+
         $("#dialog").dialog({
             autoOpen: false,
             buttons: [{
