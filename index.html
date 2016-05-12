@@ -164,8 +164,6 @@
         //run the repair system
         runAdRepair(fileList);
 
-        resetVars();
-
     }
 
     function runAdRepair(fileList) {
@@ -206,7 +204,7 @@
                 for (var i in zFList.files) {
 
                     //Zip file object
-                    var fInZip = zFlist.files[i];
+                    var fInZip = zFList.files[i];
 
                     //Push each file into an array called files
                     zFiles.push(fInZip);
@@ -215,9 +213,26 @@
                     var slash = fInZip.name.lastIndexOf("/");
                     var file_name = fInZip.name.substring(slash + 1);
 
+                    //TODO: write logic behind when and which scope each function should be called
+
                     isManifest(file_name);
                     isFLA(fInZip);
-                    hasOSXFolder(fInZip);
+                    isOSXFolder(fInZip);
+                    hasHtmlAnimateCall(fInZip);
+                    hasAPI(fInZip);
+                    animateCallIsSecure(fInZip);
+                    replaceAnimateCall(fInZip);
+                    rmSpecialChars(filename, ext);
+                    findSubFolder(subfolder);
+                    manMatchesHTML(man, html);
+                    createManifest();
+                    makeZip();
+                    checkZip();
+                    download();
+                    generateErrors();
+                    createManModal();
+                    valManDims();
+
 
                 }
 
@@ -257,10 +272,10 @@
      * returns true if the file is a hidden MACOSX folder
      */
     function isOSXFolder(fInZip) {
-        return (!(fInZip.name.substr(fInZip.lastIndexOf("/") - 8, 8) == "__MACOSX" && macosx));
+        return (!(fInZip.name.substr(fInZip.name.lastIndexOf("/") - 8, 8) == "__MACOSX"));
     }
 
-    function ishtmlAnimateCall(fInZip) {
+    function hasHtmlAnimateCall(fInZip) {
 
         var htmlText = fInZip.asText();
 
@@ -762,12 +777,8 @@
     }
 
     //Display Manifest Modal
-
     //$('#manModal').modal('show');
 
-    createManModal();
-
-    valManDims();
 
 
 </script>
