@@ -150,9 +150,35 @@
     document.getElementById("uploadMessage").style.opacity = 0;
     document.getElementById("download").style.display = "none";
     document.getElementById("download").style.opacity = 0;
-    var problems = {
-        append : function(file, problem) {
-            problems.push(file,problem);
+
+    var errors = warnings = messages = {};
+    var log = {
+        error : function(file,message) {
+            //if array is empty, create it
+            if (errors[file.name] == null) {
+                errors[file.name] = [];
+            }
+            else {
+                errors[file.name].push(message);
+            }
+        },
+        warning : function(file,message) {
+            //if array is empty, create it
+            if (warnings[file.name] == null) {
+                warnings[file.name] = [];
+            }
+            else {
+                warnings.push(file.name, message);
+            }
+        },
+        message: function(file,msg) {
+            //if array is empty, create it
+            if (errors[file.name] == null) {
+                errors[file.name] = [];
+            }
+            else {
+            messages[file.name].push(msg);
+            }
         }
     };
 
@@ -182,7 +208,6 @@
 
         }
     }
-
 
     function print(content) {
         console.log(content);
@@ -218,12 +243,13 @@
                     /*-------BEGIN CHECKS -----*/
 
                     if (isFLA(file)){
+                        log.message("FLA file found and removed");
                         //continue?
                     }
 
                     //
                     else if (isHTML(file)){
-                        print(rmSpecialChars(file));
+                        rmSpecialChars(file);
                         if (hasHtmlAnimateCall(file) && !(animateCallIsSecure(file))){
                             //replaceAnimateCall(file);
                         }
@@ -351,15 +377,15 @@
         var newFN = file.name.split(' ').join('_');
 
         if (newFN != file.name) {
-            problems.append(file.name, "Found Whitespace");
+            log.message(file, "Found and removed whitespace");
         }
 
         newFN = file.name.replace(/[^\w.-]+/g, "");
 
         if (newFN != file.name) {
-            problems.append(file, "Found Whitespace");
+            log.message(file, "Found and removed special characters");
         }
-
+        console.log(messages);
         return newFN;
     }
 
@@ -569,7 +595,7 @@
             problems.push("Nonsecure Edge Animate call detected and replaced")
         }
         if (flaFound) {
-            problems.push("FLA file found and removed");
+
         }
 
         if (apiArray.length >= 1 && f > apiArray.length) {
