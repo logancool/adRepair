@@ -150,7 +150,11 @@
     document.getElementById("uploadMessage").style.opacity = 0;
     document.getElementById("download").style.display = "none";
     document.getElementById("download").style.opacity = 0;
-
+    var problems = {
+        append : function(file, problem) {
+            problems.push(file,problem);
+        }
+    };
 
     /**
      * stores the file list and runs the repair
@@ -172,28 +176,35 @@
             //set current filename
             var file = fileList[i];
             var filename = fileList[i].name;
-
-
+            
             // use a callback to wait for files to be loaded.
-            var zFiles = getZipFiles(file, function (zFiles) {
-                return zFiles;
-            });
-
+            repair(file);
 
         }
     }
 
+
+    function print(content) {
+        console.log(content);
+    }
+
+    function isHTML(file){
+        return (file.name.lastIndexOf(".html") > -1);
+    }
+    function isDir(file){
+        return
+    }
     /**
      * @param file - the file to be unziped
      * @returns a file list inside the zipfile
      */
-    function getZipFiles(file, callback) {
+    function repair(file) {
 
         //confirm is zip before trying to unzip
         if (getFileExt(file.name) == 'zip') {
 
-            //variable holder for zip file list
-            var zFiles = [];
+            //variable holder for repaired zip file list
+            var rFiles = [];
 
             //initial and load file reader
             var reader = new FileReader();
@@ -201,46 +212,65 @@
 
                 var zFList = new JSZip(e.target.result);
 
-                for (var i in zFList.files) {
+                for (var filename in zFList.files) {
+                    var file = zFList.files[filename];
 
-                    //Zip file object
-                    var fInZip = zFList.files[i];
+                    /*-------BEGIN CHECKS -----*/
 
-                    //Push each file into an array called files
-                    zFiles.push(fInZip);
+                    if (isFLA(file)){
+                        //continue?
+                    }
 
-                    //GET FILENAME
-                    var slash = fInZip.name.lastIndexOf("/");
-                    var file_name = fInZip.name.substring(slash + 1);
+                    //
+                    else if (isHTML(file)){
+                        print(rmSpecialChars(file));
+                        if (hasHtmlAnimateCall(file) && !(animateCallIsSecure(file))){
+                            //replaceAnimateCall(file);
+                        }
+                        if (!(hasAPI(file))){
+                            //addAPI(file);
+                        }
+                    }
+
+                    //
+                    else if (isManifest(file)){
+
+                    }
+
+                    else if (isOSXFolder(file)) {
+
+                    }
+
+                    else if (isDir(file)){
+                        findSubFolder(file);
+                    }
+
+
+                    //Push each file being repaired into an array called rFiles
+                    rFiles.push(file);
+
+
+                    generateErrors();
 
                     //TODO: write logic behind when and which scope each function should be called
 
-                    isManifest(file_name);
-                    isFLA(fInZip);
-                    isOSXFolder(fInZip);
-                    hasHtmlAnimateCall(fInZip);
-                    hasAPI(fInZip);
-                    animateCallIsSecure(fInZip);
-                    replaceAnimateCall(fInZip);
-                    rmSpecialChars(filename, ext);
-                    findSubFolder(subfolder);
+                    /*
+
+
                     manMatchesHTML(man, html);
                     createManifest();
                     makeZip();
                     checkZip();
                     download();
-                    generateErrors();
+
                     createManModal();
                     valManDims();
-
-
+                    */
                 }
-
             };
-            callback(zFiles);
-        }
-        ;
-        reader.readAsArrayBuffer(file);
+            reader.readAsArrayBuffer(file);
+        };
+
     }
 
     // ---- HELPERS -- //
@@ -305,27 +335,32 @@
         htmlText = [htmlText.slice(0, animate - 1), '"' + animateReplace, htmlText.slice(animate + animateReplace.length - 1, end + 7)].join('');
     }
 
+    function removeExtension(filename){
+        var lastDotPosition = filename.lastIndexOf(".");
+        if (lastDotPosition === -1) return filename;
+        else return filename.substr(0, lastDotPosition);
+    }
     /**
      * Removes all non A-Z, 0-9 non-sensitive chars
      * @param filename - original string containing possible removable chars
      * @return reformatted filename
      */
-    function rmSpecialChars(filename, ext) {
-        //REMOVE ANY SPECIAL CHARACTERS FROM MAIN HTML
-        var str = mainHTML.substr(0, mainHTML.length - 5);
-        var tmp = str;
-        str = str.replace(/ /g, "_");
-        if (str != tmp) {
-            whiteSpace = true;
-        }
-        tmp = str;
-        str = str.replace(/[^a-zA-Z_0-9-]/g, "");
-        if (str != tmp) {
-            specialCharacters = true;
+    function rmSpecialChars(file) {
+
+        //store as a new var to see if the filename has been altered
+        var newFN = file.name.split(' ').join('_');
+
+        if (newFN != file.name) {
+            problems.append(file.name, "Found Whitespace");
         }
 
-        var newString = str.concat(ext);
-        return newString;
+        newFN = file.name.replace(/[^\w.-]+/g, "");
+
+        if (newFN != file.name) {
+            problems.append(file, "Found Whitespace");
+        }
+
+        return newFN;
     }
 
     /**
