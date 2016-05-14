@@ -219,6 +219,9 @@
     function isDir(file){
         return
     }
+    function noManifest(){
+
+    }
     /**
      * @param file - the file to be unziped
      * @returns a file list inside the zipfile
@@ -238,6 +241,7 @@
                 var zFList = new JSZip(e.target.result);
 
                 for (var filename in zFList.files) {
+                    //TODO: check filename for each file in list
                     var file = zFList.files[filename];
 
                     /*-------BEGIN CHECKS -----*/
@@ -252,47 +256,45 @@
                         rmSpecialChars(file);
                         if (hasHtmlAnimateCall(file) && !(animateCallIsSecure(file))){
                             //replaceAnimateCall(file);
+                            log.error(file, "Replaced insecure call")
                         }
                         if (!(hasAPI(file))){
                             //addAPI(file);
+                            log.error(file, "Api was not found")
                         }
                     }
 
                     //
                     else if (isManifest(file)){
-
+                        if (!(manMatchesHTML(file, htmlFN))){
+                            log.error(file, "Manifest filename did not match html filename");
+                        }
                     }
 
                     else if (isOSXFolder(file)) {
-
+                        //removeOSXFolder(file);
+                        log.error(file, "Hidden folder found and removed");
                     }
 
                     else if (isDir(file)){
                         findSubFolder(file);
+                        log.warning(file, "Nested directory was found and was updated to root")
                     }
-
 
                     //Push each file being repaired into an array called rFiles
                     rFiles.push(file);
 
-
-                    generateErrors();
-
-                    //TODO: write logic behind when and which scope each function should be called
-
-                    /*
-
-
-                    manMatchesHTML(man, html);
-                    createManifest();
-                    makeZip();
-                    checkZip();
-                    download();
-
-                    createManModal();
-                    valManDims();
-                    */
                 }
+                if (noManifest()){
+                    //createManifest();
+                    //createManModal();
+                    //valManDims();
+                }
+
+                /*---FINISH ZIPPING AND ALLOW DOWNLOAD --*/
+                makeZip();
+                checkZip();
+                download();
             };
             reader.readAsArrayBuffer(file);
         };
