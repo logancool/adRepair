@@ -7,10 +7,10 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/formvalidation/0.6.1/css/formValidation.min.css">
     <script type="text/javascript" src="js/lib/jszip.js"></script>
     <script type="text/javascript" src="js/lib/FileSaver.js"></script>
-    <script type="text/javascript" src="js/repair.js"></script>
-    <script type="text/javascript" src="js/helpers.js"></script>
     <script type="text/javascript" src="js/reports.js"></script>
     <script type="text/javascript" src="js/package.js"></script>
+    <script type="text/javascript" src="js/helpers.js"></script>
+    <script type="text/javascript" src="js/repair.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenMax.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.3.min.js"
             integrity="sha256-aaODHAgvwQW1bFOGXMeX+pC4PZIPsvn2h1sArYOhgXQ=" crossorigin="anonymous"></script>
@@ -136,7 +136,7 @@
 </body>
 </html>
 
-<script type="text/javascript">
+<script type="text/javascript" >
 
     //call inputFiles when files are loaded
     document.getElementById('inputZips').addEventListener('change', inputFiles, false);
@@ -166,12 +166,17 @@
             var file = fileList[i];
 
             //confirm is zip before trying to unzip
-            if (getFileExt(file.name) == 'zip') {
+            if (getFileExt(file) == 'zip') {
 
                 //start repair
                 repair(file);
-            }
 
+                if (noManifest){
+                    //createManifest();
+                    createManModal();
+                    valManDims();
+                }
+            }
         }
     }
 
