@@ -68,6 +68,17 @@ function hasAPI(file) {
 }
 
 /**
+ * adds the ft api to the file directly below the body tag
+ * @param file to add api to
+ * @returns updated file with the api script tag added
+ */
+function addAPI(file) {
+    var htmlText = file.asText();
+    htmlText.lastIndexOf("<");
+    return htmlText;
+}
+
+/**
  * removes any extension behind
  * @param file to remove ext
  * @returns file name without extension
@@ -136,13 +147,7 @@ function findSubFolder(file) {
  * @returns true if the html matches the manifest reference
  */
 function manMatchesHTML(man, html) {
-    //CHECK MANIFEST TO SEE IF NAME MATCHES HTML FILENAME
-    //-------------------------------------------------------
-    var slash = html.lastIndexOf("/");
-    htmlFile = html.substring(slash + 1);
-
-
-    if (manifestFound) {
+    /*
         manifestText = files[manifest].asText();
         manifestFile = files[manifest].name;
         var filename_m = manifestText.lastIndexOf("filename");
@@ -164,8 +169,7 @@ function manMatchesHTML(man, html) {
             fileNameMismatch = true;
         }
         makeZip();
-
-    }
+    */
 }
 
 function createManifest() {

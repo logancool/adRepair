@@ -1,0 +1,13 @@
+FT.manifest({
+	"filename":"728x90-728x300_expandingDown.html",
+	"width":728,
+	"height":90,
+	"clickTagCount":1,
+	"expand":{
+		"fullscreen":false,
+		"width":728,
+		"height":300,
+		"indentAcross":0,
+		"indentDown":0
+	}
+});
