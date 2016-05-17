@@ -108,7 +108,7 @@ function rmSpecialChars(file) {
     if (newFN != file.name) {
         log.message(file, "Found and removed special characters");
     }
-    console.log(messages);
+
     return newFN;
 }
 
@@ -141,35 +141,30 @@ function findSubFolder(file) {
 }
 
 /**
+ * set the HTML filename to be compared against the manifest file;
+ * @returns the html filename
+ */
+function htmlFN(zFList) {
+    var htmlFN;
+    for (var fn in zFList.files) {
+        if ((fn.lastIndexOf('.html') > -1) && fn[0] != '_'){
+            htmlFN = fn;
+        }
+    }
+    return htmlFN;
+}
+
+/**
  * checks if the html filename matches the manifest.js reference
  * @param man the manifest file to look inside
  * @param html the html file to check the name of
  * @returns true if the html matches the manifest reference
  */
-function manMatchesHTML(man, html) {
-    /*
-        manifestText = files[manifest].asText();
-        manifestFile = files[manifest].name;
-        var filename_m = manifestText.lastIndexOf("filename");
-        var html_m = manifestText.lastIndexOf(".html");
-        var end_m = manifestText.lastIndexOf("})")
-        manifestWrite = true;
+function manMatchesHTML(man, htmlFN) {
 
-        var quotes = [];
-
-        for (var q = 0; q <= manifestText.length; q++) {
-            if (manifestText[q] === '"') quotes.push(q);
-            if (quotes.length == 3) {
-                break;
-            }
-        }
-        console.log("MANIFEST FILENAME: " + manifestText.substr(quotes[2] + 1, (html_m - quotes[2]) + 4))
-        if (manifestText.substr(quotes[2] + 1, (html_m - quotes[2]) + 4) != htmlFile) {
-            manifestText = [manifestText.slice(0, quotes[2] + 1), htmlFile, manifestText.slice(html_m + 5, end_m + 3)].join('');
-            fileNameMismatch = true;
-        }
-        makeZip();
-    */
+        var manT = man.asText();
+        var manFN = manT.match(/"filename":".*"/);
+        print(manFN);
 }
 
 function createManifest() {

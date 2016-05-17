@@ -14,48 +14,33 @@ function repair(file) {
 
         var zFList = new JSZip(e.target.result);
 
-        /**
-         * returns the name of the html file if there is one
-         */
-        function getHTMLFilename(){
-            var fn = "no_html";
-            for (var i=0; i <zFList.length; i ++){
-                if (zFList[i].name.lastIndexOf(".html") > -1){
-                    fn = zFList[i].name;
-                }
-            }
-            return fn;
-        }
+        for (var fn in zFList.files) {
 
-        for (var filename in zFList.files) {
+            var file = zFList.files[fn];
 
-            var file = zFList.files[filename];
-            var htmlFN = getHTMLFilename();
-            print(htmlFN);
             /*-------BEGIN CHECKS -----*/
-
-            if (isFLA(file)){
+            if (isFLA(file)) {
                 zFList.remove(file);
                 log.message("FLA file found and removed");
             }
 
             //
-            else if (isHTML(file)){
+            else if (isHTML(file)) {
 
                 file.name = rmSpecialChars(file);
 
-                if (hasInsecureAnimateCall(file)){
+                if (hasInsecureAnimateCall(file)) {
                     replaceAnimateCall(file);
                     log.error(file, "Replaced insecure call")
                 }
-                if (!(hasAPI(file))){
+                if (!(hasAPI(file))) {
                     addAPI(file);
                     log.error(file, "Api was not found")
                 }
             }
 
-            else if (isManifest(file)){
-                if (!(manMatchesHTML(file, htmlFN))){
+            else if (isManifest(file)) {
+                if (!(manMatchesHTML(htmlFN(),file))) {
                     log.error(file, "Manifest filename did not match html filename");
                 }
             }
@@ -65,7 +50,7 @@ function repair(file) {
                 log.error(file, "Hidden folder found and removed");
             }
 
-            else if (isDir(file)){
+            else if (isDir(file)) {
                 findSubFolder(file);
                 log.warning(file, "Nested directory was found and was updated to root")
             }
@@ -74,8 +59,9 @@ function repair(file) {
             rFiles.push(file);
 
         }
-        print(messages);
-        print(warnings);
+
+        //print(messages);
+        //print(warnings);
         print(errors);
 
         /*---FINISH ZIPPING AND ALLOW DOWNLOAD --*/
