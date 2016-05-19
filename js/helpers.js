@@ -45,13 +45,11 @@ function isOSXFolder(file) {
     return (file.name.startsWith('__MACOSX'));
 }
 
-
 /**
  * @param the file to check for animate call
  * @return true if there is an http://animate call
  */
 function hasInsecureAnimateCall(file) {
-
     var htmlText = file.asText();
     return (htmlText.lastIndexOf("http://animate.adobe.com/") > -1);
 }
@@ -74,9 +72,15 @@ function hasAPI(file) {
  * @returns updated file with the api script tag added
  */
 function addAPI(file) {
-    var htmlText = file.asText();
-    htmlText.lastIndexOf("<");
-    return htmlText;
+
+    var api = "\<script src=\"http://cdn.flashtalking.com/frameworks/js/api/2/10/html5API.js\"></script>";
+    var bodyMatch = file.asText().match(/(<body.*>)/gm);
+    if (bodyMatch){
+        return file.asText().replace(/(<body.*>)/gm, bodyMatch + api);
+    }
+    else {
+        return file.asText();
+    }
 }
 
 /**
@@ -118,10 +122,7 @@ function rmSpecialChars(file) {
  * @returns updated htmlText of file containing a secure call
  */
 function replaceAnimateCall(file) {
-    var end = htmlText.lastIndexOf("</html>")
-    var animateReplace = "https://animate.adobe.com/"
-    htmlText = [htmlText.slice(0, animate - 1), '"' + animateReplace, htmlText.slice(animate + animateReplace.length - 1, end + 7)].join('');
-    return htmlText;
+    return file.asText().replace("http://animate.adobe.com/", "https://animate.adobe.com/");
 }
 
 /**
@@ -162,20 +163,18 @@ function htmlFN(zFList) {
  * @param html the html file to check the name of
  * @returns true if the html matches the manifest reference
  */
-function manMatchesHTML(man, htmlFN) {
+function matchManHTML(man, htmlFN) {
 
-    var manT = man.asText();
     var manMatch = /"filename".*:.*"(.*)"/gm;
-    if (manMatch != null) {
-        var manFN = manMatch.exec(manT)[1];
-        if (manFN != htmlFN) {
-            man.asText().replace(manFN, htmlFN);
-            log.error(file, "Manifest filename did not match html filename");
-        }
+    var manFN = manMatch.exec(man.asText())[1];
+    if ((manFN != null) && (manFN != htmlFN)) {
+        man.asText().replace(manFN, htmlFN);
+        log.error(man, "Manifest filename did not match html filename");
     }
     else {
         log.error(man, "The manifest doesn't contain a properly formatted filename.");
     }
+    return man.asText();
 }
 
 function createManifest() {

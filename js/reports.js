@@ -1,31 +1,26 @@
 var errors = warnings = messages = {};
 var log = {
-    error : function(file,message) {
+    error: function (file, message) {
         //if array is empty, create it
         if (errors[file.name] == null) {
             errors[file.name] = [];
+
         }
-        else {
-            errors[file.name].push(message);
-        }
+        errors[file.name].push(message);
     },
-    warning : function(file,message) {
+    warning: function (file, message) {
         //if array is empty, create it
         if (warnings[file.name] == null) {
             warnings[file.name] = [];
         }
-        else {
-            warnings.push(file.name, message);
-        }
+        warnings.push(file.name, message);
     },
-    message: function(file,msg) {
+    message: function (file, msg) {
         //if array is empty, create it
         if (errors[file.name] == null) {
             errors[file.name] = [];
         }
-        else {
-            messages[file.name].push(msg);
-        }
+        messages[file.name].push(msg);
     }
 };
 

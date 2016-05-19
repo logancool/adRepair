@@ -18,10 +18,11 @@ function repair(file) {
         for (var fn in zFList.files) {
 
             var file = zFList.files[fn];
+
             /*-------BEGIN CHECKS -----*/
             if (isFLA(file)) {
-                zFList.remove(file);
-                log.message("FLA file found and removed");
+                zFList.remove(file.name);
+                log.message(file, "FLA file found and removed");
             }
 
             //
@@ -30,12 +31,31 @@ function repair(file) {
                 file.name = rmSpecialChars(file);
 
                 if (hasInsecureAnimateCall(file)) {
-                    replaceAnimateCall(file);
-                    log.error(file, "Replaced insecure call")
+
+                    log.error(file.name, "Replaced insecure call");
+
+
+                    var fn = file.name;
+                    var fc = replaceAnimateCall(file);
+
+                    zFList.remove(file.name);
+                    zFList.file(fn,fc);
+
+                    file = zFList.files[fn];
                 }
+
+
+
                 if (!(hasAPI(file))) {
-                    addAPI(file);
-                    log.error(file, "Api was not found")
+
+                    log.error(file, "Api was not found");
+
+                    fc = addAPI(file);
+
+                    zFList.remove(file.name);
+                    zFList.file(fn,fc);
+
+                    file = zFList.files[fn];
                 }
             }
 
@@ -43,10 +63,11 @@ function repair(file) {
 
                 var hFN = htmlFN(zFList);
 
-                //ensure the manifest matches the html filename
-                manMatchesHTML(file, hFN);
+                var fn = file.name;
+                var fc = matchManHTML(file, hFN); //ensure the manifest matches the html filename
 
-                print(file.asText());
+                zFList.remove(file.name);
+                zFList.file(fn,fc);
 
             }
 
