@@ -12,12 +12,12 @@ function repair(file) {
     var reader = new FileReader();
     reader.onload = function (e) {
 
+        //The list containing all the files in the zip
         var zFList = new JSZip(e.target.result);
 
         for (var fn in zFList.files) {
 
             var file = zFList.files[fn];
-
             /*-------BEGIN CHECKS -----*/
             if (isFLA(file)) {
                 zFList.remove(file);
@@ -40,16 +40,19 @@ function repair(file) {
             }
 
             else if (isManifest(file)) {
+
                 var hFN = htmlFN(zFList);
-                print(hFN);
-                if (!(manMatchesHTML(file,hFN))) {
-                    matchManFN(file, hFN);
-                    log.error(file, "Manifest filename did not match html filename");
-                }
+
+                //ensure the manifest matches the html filename
+                manMatchesHTML(file, hFN);
+
+                print(file.asText());
+
             }
 
             else if (isOSXFolder(file)) {
-                //removeOSXFolder(file);
+
+                zFList.remove(file.name);
                 log.error(file, "Hidden folder found and removed");
             }
 
@@ -65,7 +68,7 @@ function repair(file) {
 
         //print(messages);
         //print(warnings);
-        print(errors);
+        //print(errors);
 
         /*---FINISH ZIPPING AND ALLOW DOWNLOAD --*/
         makeZip();

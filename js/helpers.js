@@ -11,14 +11,14 @@ function getFileExt(file) {
 /**
  * @return true if the @param file is an html file
  */
-function isHTML(file){
+function isHTML(file) {
     return (file.name.lastIndexOf(".html") > -1);
 }
 
 /**
  * @return true if the @param file is a directory
  */
-function isDir(file){
+function isDir(file) {
     return false;
 }
 
@@ -26,8 +26,8 @@ function isDir(file){
  * @param file to check is manifest
  * @return true if the file is named manifest.js
  */
-function isManifest(file){
-    return (file.name == "manifest.js");
+function isManifest(file) {
+    return (file.name === "manifest.js");
 }
 
 /**
@@ -42,8 +42,9 @@ function isFLA(file) {
  * returns true if the file is a hidden MACOSX folder
  */
 function isOSXFolder(file) {
-    return (!(file.name.substr(file.name.lastIndexOf("/") - 8, 8) == "__MACOSX"));
+    return (file.name.startsWith('__MACOSX'));
 }
+
 
 /**
  * @param the file to check for animate call
@@ -83,7 +84,7 @@ function addAPI(file) {
  * @param file to remove ext
  * @returns file name without extension
  */
-function removeExtension(file){
+function removeExtension(file) {
     var lastDotPosition = file.name.lastIndexOf(".");
     if (lastDotPosition === -1) return file.name;
     else return file.name.substr(0, lastDotPosition);
@@ -108,7 +109,6 @@ function rmSpecialChars(file) {
     if (newFN != file.name) {
         log.message(file, "Found and removed special characters");
     }
-
     return newFN;
 }
 
@@ -147,47 +147,35 @@ function findSubFolder(file) {
 function htmlFN(zFList) {
     var htmlFN;
     for (var fn in zFList.files) {
-        if ((fn.lastIndexOf('.html') > -1) && fn[0] != '_'){
-            htmlFN = fn;
+        if ((fn.lastIndexOf('.html') > -1) && fn[0] != '_') {
+            htmlFN = rmSpecialChars(zFList.files[fn]);
+            zFList.files[fn].name = htmlFN;
         }
     }
     return htmlFN;
 }
-/**
- * Changes the filename of the manifest to match the html file
- */
-function matchManFN(man, htmlFN){
-    var manT = man.asText();
-    var manMatch = /"filename".*:.*"(.*)"/gm;
-    var manFN = manMatch.exec(manT)[1];
-    manT = manT.replace(manFN, htmlFN);
-    return manT;
-}
 
 /**
  * checks if the html filename matches the manifest.js reference
+ * if it doesn't it will match it
  * @param man the manifest file to look inside
  * @param html the html file to check the name of
  * @returns true if the html matches the manifest reference
  */
 function manMatchesHTML(man, htmlFN) {
 
-        var manT = man.asText();
-        var manMatch = /"filename".*:.*"(.*)"/gm;
-        if (manMatch != null){
-            var manFN = manMatch.exec(manT)[1];
-            if (manFN == htmlFN){
-                return true;
-            }
-            else {
-                return false;
-            }
-
+    var manT = man.asText();
+    var manMatch = /"filename".*:.*"(.*)"/gm;
+    if (manMatch != null) {
+        var manFN = manMatch.exec(manT)[1];
+        if (manFN != htmlFN) {
+            man.asText().replace(manFN, htmlFN);
+            log.error(file, "Manifest filename did not match html filename");
         }
-        else {
-            log.error(man, "The manifest doesn't contain a properly formatted filename.");
-            return false;
-        }
+    }
+    else {
+        log.error(man, "The manifest doesn't contain a properly formatted filename.");
+    }
 }
 
 function createManifest() {
