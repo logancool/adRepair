@@ -153,6 +153,16 @@ function htmlFN(zFList) {
     }
     return htmlFN;
 }
+/**
+ * Changes the filename of the manifest to match the html file
+ */
+function matchManFN(man, htmlFN){
+    var manT = man.asText();
+    var manMatch = /"filename".*:.*"(.*)"/gm;
+    var manFN = manMatch.exec(manT)[1];
+    manT = manT.replace(manFN, htmlFN);
+    return manT;
+}
 
 /**
  * checks if the html filename matches the manifest.js reference
@@ -163,8 +173,21 @@ function htmlFN(zFList) {
 function manMatchesHTML(man, htmlFN) {
 
         var manT = man.asText();
-        var manFN = manT.match(/"filename":".*"/);
-        print(manFN);
+        var manMatch = /"filename".*:.*"(.*)"/gm;
+        if (manMatch != null){
+            var manFN = manMatch.exec(manT)[1];
+            if (manFN == htmlFN){
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        }
+        else {
+            log.error(man, "The manifest doesn't contain a properly formatted filename.");
+            return false;
+        }
 }
 
 function createManifest() {

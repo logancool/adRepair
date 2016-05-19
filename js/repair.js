@@ -40,7 +40,10 @@ function repair(file) {
             }
 
             else if (isManifest(file)) {
-                if (!(manMatchesHTML(htmlFN(),file))) {
+                var hFN = htmlFN(zFList);
+                print(hFN);
+                if (!(manMatchesHTML(file,hFN))) {
+                    matchManFN(file, hFN);
                     log.error(file, "Manifest filename did not match html filename");
                 }
             }
