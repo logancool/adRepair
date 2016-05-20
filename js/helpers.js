@@ -1,3 +1,7 @@
+//common dimensions (value)
+var COMMON_WIDTH = [1, 88, 120, 120, 125, 160, 180, 234, 240, 250, 300, 336, 468, 728];
+var COMMON_HEIGHT = [1, 31, 60, 90, 125, 150, 240, 250, 280, 400, 600];
+
 // ---- HELPERS -- //
 
 /**
@@ -19,6 +23,7 @@ function isHTML(file) {
  * @return true if the @param file is a directory
  */
 function isDir(file) {
+    print(file.name, file.dir);
     return false;
 }
 
@@ -75,7 +80,7 @@ function addAPI(file) {
 
     var api = "\<script src=\"http://cdn.flashtalking.com/frameworks/js/api/2/10/html5API.js\"></script>";
     var bodyMatch = file.asText().match(/(<body.*>)/gm);
-    if (bodyMatch){
+    if (bodyMatch) {
         return file.asText().replace(/(<body.*>)/gm, bodyMatch + api);
     }
     else {
@@ -145,7 +150,7 @@ function findSubFolder(file) {
  * set the HTML filename to be compared against the manifest file;
  * @returns the html filename
  */
-function htmlFN(zFList) {
+function findhtmlFN(zFList) {
     var htmlFN;
     for (var fn in zFList.files) {
         if ((fn.lastIndexOf('.html') > -1) && fn[0] != '_') {
@@ -167,9 +172,11 @@ function matchManHTML(man, htmlFN) {
 
     var manMatch = /"filename".*:.*"(.*)"/gm;
     var manFN = manMatch.exec(man.asText())[1];
-    if ((manFN != null) && (manFN != htmlFN)) {
-        man.asText().replace(manFN, htmlFN);
-        log.error(man, "Manifest filename did not match html filename");
+    if (manFN != null) {
+        if (manFN != htmlFN) {
+            man.asText().replace(manFN, htmlFN);
+            log.error(man, "Manifest filename did not match html filename");
+        }
     }
     else {
         log.error(man, "The manifest doesn't contain a properly formatted filename.");
@@ -177,58 +184,21 @@ function matchManHTML(man, htmlFN) {
     return man.asText();
 }
 
-function createManifest() {
-    //IF NO MANIFEST EXISTS CREATE ONE
-    var width = "";
-    var height = "";
+function findManDim(hFN){
+    var findWH = /([[0-9]+)x([[0-9]+)/;
+    var match = findWH.exec(hFN);
+    print(match);
+    return match;
+}
 
-    var indices = [];
-    var indices2 = [];
+function createManT(hFN, w, h) {
 
-    for (var d = 0; d < fileName.length; d++) {
-        if (fileName[d] === "x") indices.push(d);
-    }
+    var manT = 'FT.manifest({\n"filename": "' +
+        hFN + '",\n"width": ' +
+        w + ',\n"height": ' +
+        h + ',\n"clickTagCount": 1\n});';
 
-    for (var c = 0; c < mainHTML.length; c++) {
-        if (mainHTML[c] === "x") indices2.push(c);
-    }
-    if (manifestFound != true) {
-        noManifestFound = true;
-        //CHECK MAIN FILE NAME FOR DIMENSIONS
-        for (x = 0; x < indices.length; x++) {
-            if (Number(fileName.substr(indices[x] - 3, 3) % 1) == 0) {
-                width = fileName.substr(indices[x] - 3, 3);
-            }
-            //Check 2 or 3 characters past the x to determine the height
-            if (Number(fileName.substr(indices[x] + 1, 3) % 1) == 0 && fileName[indices[x] + 3] != ".") {
-                height = fileName.substr(indices[x] + 1, 3);
-                fileName[indices[x] + 3]
-            } else if (Number(fileName.substr(indices[x] + 1, 2) % 1) == 0) {
-                height = fileName.substr(indices[x] + 1, 2);
-            }
-        }
-        //CHECK MAIN HTML FILE NAME FOR DIMENSIONS
-        for (var y = 0; y < indices2.length; y++) {
-            if (Number(mainHTML.substr(indices2[y] - 3, 3) % 1) == 0 && width == "") {
-                width = mainHTML.substr(indices2[y] - 3, 3);
-            }
-            //Check 2 or 3 characters past the x to determine the height
-            if (height == "") {
-                if (Number(mainHTML.substr(indices2[y] + 1, 3) % 1) == 0 && mainHTML[indices2[y] + 3] != ".") {
-                    height = mainHTML.substr(indices2[y] + 1, 3);
-                } else if (Number(mainHTML.substr(indices2[y] + 1, 2) % 1) == 0) {
-                    height = mainHTML.substr(indices2[y] + 1, 2);
-                }
-            }
-        }
-        if (width == "" && height == "") {
-            // document.getElementById("background").style.display = "block";
-            //  document.getElementById("manifestDialog").innerHTML = "No manifest ` was detected in your adfile. Please enter the width and height for the adfile below:<br><br>" + fileName;
-            //  console.log("file name for manifest: " + fileName);
-            //  $("#dialog").dialog("open");
-        }
-        newManifest = 'FT.manifest({\n"filename": "' + htmlFile + '",\n"width": ' + width + ',\n"height": ' + height + ',\n"clickTagCount": 1\n});'
-    }
+    return manT;
 }
 
 /**
@@ -247,59 +217,19 @@ function createManModal() {
     // When the user clicks on the button, open the modal
     btn.onclick = function () {
         modal.style.display = "block";
-    }
+    };
 
     // When the user clicks on <span> (x), close the modal
     span.onclick = function () {
         modal.style.display = "none";
-    }
+    };
 
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function (event) {
         if (event.target == modal) {
             modal.style.display = "none";
         }
-    }
-}
-
-/**
- * Validates the users input for width and height, checking if the values are common
- * and returning the appropriate warning/error
- */
-function valManDims() {
-
-    //returns true if the value is in the array
-    function isIn(value, array) {
-        if (array.indexOf(value) != -1) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    //returns if the width or height (dim) is a common dimension (value)
-    function isCommonDim(dim, value) {
-        if (dim == 'manW') {
-            var commonW = [1, 88, 120, 120, 125, 160, 180, 234, 240, 250, 300, 336, 468, 728];
-            if (isIn(value, commonW)) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        else if (dim == 'manH') {
-            var commonH = [1, 31, 60, 90, 125, 150, 240, 250, 280, 400, 600];
-            if (isIn(value, commonH)) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        else return false;
-    }
+    };
 
     $('#manModal').formValidation({
         framework: 'bootstrap',
@@ -356,6 +286,7 @@ function valManDims() {
             }
         }
     });
+
     // This event will be triggered when the field passes given validator
     $('#manModal').on('success.field.fv', function (e, data) {
 
@@ -388,7 +319,7 @@ function valManDims() {
         var input = parseInt(data.element[0].value);
 
         //check if there's warnings for either field
-        if (!(isCommonDim(data.field, input))) {
+        if ((!(isIn(input, COMMON_WIDTH))) || (!(isIn(input, COMMON_HEIGHT))))  {
             // The width is not common - add warning
             addWarning(data);
         }
@@ -397,6 +328,30 @@ function valManDims() {
             removeWarning(data);
         }
     });
+}
+
+/**
+ * Validates the users input for width and height, checking if the values are common
+ * and returning the appropriate warning/error
+ */
+function valManDims(file, w, h) {
+    if (!(isIn(w, COMMON_WIDTH))){
+        log.warning(file, "Is not a common width but was set.");
+    }
+
+    if (!(isIn(file, h, COMMON_HEIGHT))){
+        log.warning(file, "Is not a common height but was set.");
+    }
+}
+
+//returns true if the value is in the array
+function isIn(value, array) {
+    if (array.indexOf(value) != -1) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 // --- END HELPERS --- //

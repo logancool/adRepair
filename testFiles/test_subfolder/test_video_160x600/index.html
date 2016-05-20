@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+	@font-face {
+			font-family: opensans;
+			src: url("fonts/opensans-regular-webfont.ttf");
+			src: url("fonts/opensans-regular-webfont.woff");
+		}
+
+	html, body {
+		font-family: opensans;
+		height: 250px;
+		width: 300px;
+	}
+
+	img {
+		margin-left: 10px;
+		margin-top: 10px;
+	}
+
+	#container {
+		background-image: url("images/300x250_background_blue.jpg");
+		height: 250px;
+		width: 300px;
+	}
+
+	#vidholder {
+		height: 150px;
+		margin: 45px;
+		margin-top: 10px;
+		position: absolute;
+        width: 200px;
+	}
+	</style>
+</head>
+<body>
+
+	<div id="container">
+    <img src="images/logo.jpg" alt="logo" />
+    <br>&nbsp;&nbsp;&nbsp;Youtube video ad
+    <div id="vidholder"></div>
+	</div>
+
+	<script src="http://cdn.flashtalking.com/frameworks/js/api/2/9/html5API.js"></script>
+	<script>
+
+	vidHolder = myFT.$("#vidholder"),
+	container = myFT.$("#container");
+
+	myFT.applyClickTag(container, 1);
+    
+    //note: you MUST set the height and width when using a youtube video
+	var vid = myFT.insertVideo({
+    parent: vidHolder,
+    video: "video1",
+    controls: true,
+    autoplay: false,
+    width: "200",
+    height: "150"
+	});
+
+
+	</script>
+</body>
+</html>
