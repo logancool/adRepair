@@ -125,6 +125,8 @@ function repair(file) {
         /*---FINISH ZIPPING AND ALLOW DOWNLOAD --*/
         makeZip();
         download();
+        print("here");
+        React.renderComponent(<Accordion title="Accordion Title Here" />, document.getElementById('repairedFiles'));
     };
 
     reader.readAsArrayBuffer(file);

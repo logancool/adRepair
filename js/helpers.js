@@ -1,3 +1,29 @@
+var errors = warnings = messages = {};
+var log = {
+    error: function (file, message) {
+        //if array is empty, create it
+        if (errors[file.name] == null) {
+            errors[file.name] = [];
+
+        }
+        errors[file.name].push(message);
+    },
+    warning: function (file, message) {
+        //if array is empty, create it
+        if (warnings[file.name] == null) {
+            warnings[file.name] = [];
+        }
+        warnings[file.name].push(file.name, message);
+    },
+    message: function (file, msg) {
+        //if array is empty, create it
+        if (errors[file.name] == null) {
+            errors[file.name] = [];
+        }
+        messages[file.name].push(msg);
+    }
+};
+
 //common dimensions (value)
 var COMMON_WIDTH = [1, 88, 120, 120, 125, 160, 180, 234, 240, 250, 300, 336, 468, 728];
 var COMMON_HEIGHT = [1, 31, 60, 90, 125, 150, 240, 250, 280, 400, 600];

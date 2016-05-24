@@ -1,0 +1,20 @@
+{
+  "name": "adrepair",
+  "description": "A tool that repairs common errors when uploading to the flashtalking system",
+  "main": "main.jsx",
+  "authors": [
+    "David Silver; Logan Cool"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/logancool/adRepair",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "react": "^15.1.0"
+  }
+}
