@@ -8,10 +8,11 @@
     <script type="text/javascript" src="js/lib/jszip.js"></script>
     <script type="text/javascript" src="js/lib/FileSaver.js"></script>
     <script type="text/javascript" src="js/package.js"></script>
+    <script type="text/javascript" src="js/helpers.js"></script>
     <script src="bower_components/react/react.js"></script>
     <script src="bower_components/react/react-dom.js"></script>
-    <script type="text/jsx" src="js/repair.js"></script>
-    <script type="text/jsx" src="js/reports.jsx"></script>
+    <script type="text/javascript" src="js/repair.js"></script>
+    <script type="text/javascript" src="js/reports.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenMax.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.3.min.js"
@@ -42,13 +43,16 @@
 
         </div>
 
-        <div id="loading">
+        <div id="loading" style="display: none; text-align: center">
             <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
         </div>
 
-        <div id="repairedFiles"></div>
+        <div role="tablist" aria-multiselectable="true" id="rFiles-container">
+            <div class="panel panel-default" id="rFiles">
+            </div>
+        </div>
 
-        <button id="dwldAll" class="navbar-btn btn pull-right" onclick="dwnldAll()">Download All
+        <button id="dwnldAll" style="display: none" class="navbar-btn btn pull-right" onclick="dwnldAll()">Download All
         </button>
     </div>
 
@@ -174,6 +178,9 @@
 
             //confirm is zip before trying to unzip
             if (getFileExt(file) == 'zip') {
+
+                //display loading
+                document.getElementById('loading').style.display = "block";
 
                 //start repair
                 repair(file);

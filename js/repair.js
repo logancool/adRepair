@@ -8,6 +8,7 @@ function repair(file) {
     //variable holder for repaired zip file list
     var rFiles = [];
     var zFN = file.name;
+    var rFile = file;
 
     //initial and load file reader
     var reader = new FileReader();
@@ -123,10 +124,10 @@ function repair(file) {
         //print(errors);
 
         /*---FINISH ZIPPING AND ALLOW DOWNLOAD --*/
-        makeZip();
-        download();
-        print("here");
-        React.renderComponent(<Accordion title="Accordion Title Here" />, document.getElementById('repairedFiles'));
+        //makeZip();
+        //download();
+
+        report(rFile);
     };
 
     reader.readAsArrayBuffer(file);

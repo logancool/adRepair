@@ -66,9 +66,7 @@ a {
   padding: 15px;
 }
 
-#check {
-  padding-top: 70px;
-}
+
 
 .glyphicon-refresh-animate {
   -animation: spin 1s infinite linear;
@@ -90,7 +88,14 @@ a {
 }
 
 #loading {
-  padding-top:40px;
+  padding-top:50px;
+}
+#rFiles-container{
+  display:none;
+  padding-top: 50px;
+}
+#rFiles {
+
 }
 .main {
   position: absolute;
