@@ -32,7 +32,7 @@ function createContentNode(file) {
                 <h4 class="panel-title">\
                     <a class="accordian" data-toggle="collapse" style="vertical-align: -webkit-baseline-middle; data-parent="#accordion" href="' + '#' + fn + '"\
                        aria-expanded="false" aria-controls=' + fn + '>\
-                        ' + file.name + " " + rEFlag(file.name) + rWFlag(file.name) + rMFlag(file.name) + rDButton(file) + '\
+                        ' + file.name + " " + rEFlag(file.name) + " " + rWFlag(file.name) + " " + rMFlag(file.name) + rDButton(file) + '\
                     </a>\
                 </h4>\
             </div>\
@@ -41,6 +41,7 @@ function createContentNode(file) {
             '</div>';
     return listContent;
 }
+
 function pp(string) {
     var output = '<ul>';
     for (var i = 0; i < string.length; i++) {
@@ -48,6 +49,7 @@ function pp(string) {
     }
     return output + '</ul>';
 }
+
 function report(file) {
 
     print(errors);

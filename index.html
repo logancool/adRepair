@@ -174,7 +174,7 @@
             var file = fileList[i];
 
             //remove any special characters in the zipname
-            file.name = rmSpecialChars(file);
+            file.name = rmSpecialChars(file, file);
 
             //confirm is zip before trying to unzip
             if (getFileExt(file) == 'zip') {

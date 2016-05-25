@@ -6,10 +6,9 @@
 function repair(file) {
 
     //variable holder for repaired zip file list
-    var roots = [];
-    var zFN = file.name;
+    //var roots = [];
     var root = file;
-    var rLog = [];
+    var zFN = file.name;
 
     //initial and load file reader
     var reader = new FileReader();
@@ -22,7 +21,8 @@ function repair(file) {
         for (var fn in zFList.files) {
 
             var file = zFList.files[fn];
-            var hFN = findhtmlFN(zFList);
+            var hFN = findHtmlFN(root,zFList);
+
 
             /*-------BEGIN CHECKS -----*/
             if (isFLA(file)) {
@@ -32,7 +32,7 @@ function repair(file) {
 
             else if (isHTML(file)) {
 
-                file.name = rmSpecialChars(file);
+                file.name = rmSpecialChars(root, file);
 
                 if (hasInsecureAnimateCall(file)) {
 
@@ -70,7 +70,7 @@ function repair(file) {
             else if (isManifest(file)) {
 
                 var fn = file.name;
-                var fc = matchManHTML(file, hFN); //ensure the manifest matches the html filename
+                var fc = matchManHTML(root, file, hFN); //ensure the manifest matches the html filename
 
                 zFList.remove(file.name);
                 zFList.file(fn,fc);
@@ -86,7 +86,7 @@ function repair(file) {
             }
 
             //Push each file being repaired into an array called roots
-            roots.push(file);
+            //roots.push(file);
         }
 
         if (!(manifestFound)){
@@ -110,13 +110,14 @@ function repair(file) {
                 file = zFList.file("manifest.js", manT);
 
                 //apply warnings if there's any validation issues
-                valManDims(file, w,h);
+                valManDims(root, file, w,h);
 
             }
             else {
                 //Display Manifest Modal
                 createManModal();
                 $('#manModal').modal('show');
+                alert(1);
             }
         }
 

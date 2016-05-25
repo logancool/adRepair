@@ -102,23 +102,24 @@ function removeExtension(file) {
 /**
  * Removes all non A-Z, 0-9 non-sensitive chars
  * @param filename - original string containing possible removable chars
+ * @param root the root file to link in the log
  * @return reformatted filename
  */
-function rmSpecialChars(file) {
+function rmSpecialChars(root, file) {
 
     //store as a new var to see if the filename has been altered
-    var newFN = file.name.split(' ').join('_');
+    var wsFN = file.name.split(' ').join('_');
 
-    if (newFN != file.name) {
-        log.message(file, "Found and removed whitespace");
+    if (wsFN != file.name) {
+        log.message(root, file, "Found and removed whitespace");
     }
 
-    newFN = file.name.replace(/[^\w.-]+/g, "");
+    var spFN = wsFN.replace(/[^\w.-]+/g, "");
 
-    if (newFN != file.name) {
-        log.message(file, "Found and removed special characters");
+    if (spFN != wsFN) {
+        log.message(root, file, "Found and removed special characters");
     }
-    return newFN;
+    return spFN;
 }
 
 /**
@@ -150,11 +151,11 @@ function findSubFolder(file) {
  * set the HTML filename to be compared against the manifest file;
  * @returns the html filename
  */
-function findhtmlFN(zFList) {
+function findHtmlFN(root, zFList) {
     var htmlFN;
     for (var fn in zFList.files) {
         if ((fn.lastIndexOf('.html') > -1) && fn[0] != '_') {
-            htmlFN = rmSpecialChars(zFList.files[fn]);
+            htmlFN = rmSpecialChars(root, zFList.files[fn]);
             zFList.files[fn].name = htmlFN;
         }
     }
@@ -168,18 +169,18 @@ function findhtmlFN(zFList) {
  * @param html the html file to check the name of
  * @returns true if the html matches the manifest reference
  */
-function matchManHTML(man, htmlFN) {
+function matchManHTML(root, man, htmlFN) {
 
     var manMatch = /"filename".*:.*"(.*)"/gm;
     var manFN = manMatch.exec(man.asText())[1];
     if (manFN != null) {
         if (manFN != htmlFN) {
             man.asText().replace(manFN, htmlFN);
-            log.error(man, "Manifest filename did not match html filename");
+            log.error(root, man, "Manifest filename did not match html filename");
         }
     }
     else {
-        log.error(man, "The manifest doesn't contain a properly formatted filename.");
+        log.error(root, man, "The manifest doesn't contain a properly formatted filename.");
     }
     return man.asText();
 }
@@ -333,13 +334,13 @@ function createManModal() {
  * Validates the users input for width and height, checking if the values are common
  * and returning the appropriate warning/error
  */
-function valManDims(file, w, h) {
+function valManDims(root,file, w, h) {
     if (!(isIn(w, COMMON_WIDTH))){
-        log.warning(file, "Is not a common width but was set.");
+        log.warning(root,file, "Is not a common width but was set.");
     }
 
     if (!(isIn(file, h, COMMON_HEIGHT))){
-        log.warning(file, "Is not a common height but was set.");
+        log.warning(root, file, "Is not a common height but was set.");
     }
 }
 
