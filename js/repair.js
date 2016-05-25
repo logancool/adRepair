@@ -6,9 +6,10 @@
 function repair(file) {
 
     //variable holder for repaired zip file list
-    var rFiles = [];
+    var roots = [];
     var zFN = file.name;
-    var rFile = file;
+    var root = file;
+    var rLog = [];
 
     //initial and load file reader
     var reader = new FileReader();
@@ -26,7 +27,7 @@ function repair(file) {
             /*-------BEGIN CHECKS -----*/
             if (isFLA(file)) {
                 zFList.remove(file.name);
-                log.message(file, "FLA file found and removed");
+                log.message(root, file, "FLA file found and removed");
             }
 
             else if (isHTML(file)) {
@@ -35,7 +36,7 @@ function repair(file) {
 
                 if (hasInsecureAnimateCall(file)) {
 
-                    log.error(file.name, "Replaced insecure call");
+                    log.error(root, file, "Replaced insecure call");
 
                     var fn = file.name;
                     var fc = replaceAnimateCall(file);
@@ -51,7 +52,7 @@ function repair(file) {
 
                 if (!(hasAPI(file))) {
 
-                    log.error(file, "Api was not found");
+                    log.error(root, file, "Api was not found");
 
                     //reset file content
                     fc = addAPI(file);
@@ -81,11 +82,11 @@ function repair(file) {
             else if (isOSXFolder(file)) {
 
                 zFList.remove(file.name);
-                log.error(file, "Hidden folder found and removed");
+                log.error(root, file, "Hidden folder found and removed");
             }
 
-            //Push each file being repaired into an array called rFiles
-            rFiles.push(file);
+            //Push each file being repaired into an array called roots
+            roots.push(file);
         }
 
         if (!(manifestFound)){
@@ -126,8 +127,7 @@ function repair(file) {
         /*---FINISH ZIPPING AND ALLOW DOWNLOAD --*/
         //makeZip();
         //download();
-
-        report(rFile);
+        report(root);
     };
 
     reader.readAsArrayBuffer(file);

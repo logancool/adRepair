@@ -1,56 +1,56 @@
-var errors = warnings = messages = {};
-var log = {
-    error: function (file, message) {
-        //if array is empty, create it
-        if (errors[file.name] == null) {
-            errors[file.name] = [];
+var errors = {};
+var warnings = {};
+var messages = {};
 
-        }
-        errors[file.name].push(message);
-    },
-    warning: function (file, message) {
+var log = {
+    error: function (root, file, message) {
         //if array is empty, create it
-        if (warnings[file.name] == null) {
-            warnings[file.name] = [];
+        if (errors[root.name] == null) {
+            errors[root.name] = [];
         }
-        warnings[file.name].push(file.name, message);
+        errors[root.name].push([file.name , message]);
     },
-    message: function (file, msg) {
+    warning: function (root, file, message) {
         //if array is empty, create it
-        if (errors[file.name] == null) {
-            errors[file.name] = [];
+        if (warnings[root.name] == null) {
+            warnings[root.name] = [];
         }
-        messages[file.name].push(msg);
+        warnings[root.name].push([file.name, message]);
+    },
+    message: function (root, file, msg) {
+        //if array is empty, create it
+        if (messages[root.name] == null) {
+            messages[root.name] = [];
+        }
+        messages[root.name].push([file.name, msg]);
     }
 };
 
-function createContentNode(file){
+function createContentNode(file) {
     var listContent = '\
             <div class="panel-heading" role="tab" id="heading">\
                 <h4 class="panel-title">\
                     <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#cFile"\
                        aria-expanded="false" aria-controls="cFile">\
-                        ' + file.name + rEFlag(file.name) + rWFlag(file.name) + rWFlag(file.name) + '\
+                        ' + file.name + " " + rEFlag(file.name) + rWFlag(file.name) + rWFlag(file.name) + '\
                     </a>\
                 </h4>\
             </div>\
-            <div id="cFile" class="panel-collapse collapse transparent" role="tabpanel" aria-labelledby="heading">\
-\
-                <div class="alert alert-danger fade in">\
-                    ' + rErrors(file.name) + '\
-                </div>\
-                <div class="alert alert-warning fade in">\
-                    ' + rWarnings(file.name) + '\
-                </div>\
-                <div class="alert alert-success fade in">\
-                    ' + rMessages(file.name) + '\
-                </div>\
-            </div>';
+            <div id="cFile" class="panel-collapse collapse transparent" role="tabpanel" aria-labelledby="heading">'
+                + rErrors(file.name) + rWarnings(file.name) + rMessages(file.name) +
+            '</div>';
     return listContent;
 }
+function pp(string) {
+    var output = '<ul>';
+    for (var i = 0; i < string.length; i++) {
+        output = output + '<li><span style="color:#000000; font-weight: bold">' + string[i][0] + '</span> : ' + string[i][1] + '</li>';
+    }
+    return output + '</ul>';
+}
+function report(file) {
 
-function report(file){
-    print(file);
+    print(errors);
 
     document.getElementById('rFiles').innerHTML = document.getElementById('rFiles').innerHTML + createContentNode(file);
 
@@ -66,33 +66,43 @@ function report(file){
 
 }
 
-function rEFlag(fn){
+function rEFlag(fn) {
     if (errors[fn] != null) {
-        return '<span class="label label-danger label-as-badge">' + errors[fn] + '</span>';
+        return '<span class="label label-danger label-as-badge">' + errors[fn].length + '</span>';
     }
     else return '';
 }
 
-function rWFlag(fn){
+function rWFlag(fn) {
     if (warnings[fn] != null) {
-        return '<span class="label label-warning label-as-badge">' + warnings[fn]+ '</span>';
+        return '<span class="label label-warning label-as-badge">' + warnings[fn].length + '</span>';
     }
     else return '';
 }
 
-function rMFlag(fn){
+function rMFlag(fn) {
     if (messages[fn] != null) {
-        return '<span class="label label-success label-as-badge">' + messages[fn] + '</span>';
+        return '<span class="label label-success label-as-badge">' + messages[fn].length + '</span>';
     }
     else return '';
 }
-function rErrors(fn){
-    return '<h5>Errors: </h5> ' + errors[fn];
+function rErrors(fn) {
+    if (errors[fn] != null) {
+        return '<div class="alert alert-danger fade in"><h5>Errors: </h5>' + pp(errors[fn]) + '</div>';
+    }
+    else return '';
 }
-function rWarnings(fn){
-    return '<h5>Warnings: </h5> ' + warnings[fn];
+
+function rWarnings(fn) {
+    if (warnings[fn] != null) {
+        return '<div class="alert alert-warning fade in"><h5>Warnings: </h5> ' + pp(warnings[fn]) + '</div>';
+    }
+    else return '';
 }
-function rMessages(fn){
-    return '<h5>Message: </h5> ' + messages[fn];
+function rMessages(fn) {
+    if (messages[fn] != null) {
+        return '<div class="alert alert-success fade in"><h5>Message: </h5> ' + pp(messages[fn]) + '</div>';
+    }
+    else return '';
 }
 

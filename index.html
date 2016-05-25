@@ -182,6 +182,9 @@
                 //display loading
                 document.getElementById('loading').style.display = "block";
 
+                //reset report
+                document.getElementById('rFiles').innerHTML = "";
+
                 //start repair
                 repair(file);
             }

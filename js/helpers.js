@@ -23,7 +23,7 @@ function isHTML(file) {
  * @return true if the @param file is a directory
  */
 function isDir(file) {
-    print(file.name, file.dir);
+
     return false;
 }
 
@@ -187,7 +187,6 @@ function matchManHTML(man, htmlFN) {
 function findManDim(hFN){
     var findWH = /([[0-9]+)x([[0-9]+)/;
     var match = findWH.exec(hFN);
-    print(match);
     return match;
 }
 
