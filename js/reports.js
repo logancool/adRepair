@@ -25,18 +25,18 @@ var log = {
         messages[root.name].push([file.name, msg]);
     }
 };
-
 function createContentNode(file) {
+    var fn = removeExtension(file);
     var listContent = '\
             <div class="panel-heading" role="tab" id="heading">\
                 <h4 class="panel-title">\
-                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#cFile"\
-                       aria-expanded="false" aria-controls="cFile">\
-                        ' + file.name + " " + rEFlag(file.name) + rWFlag(file.name) + rWFlag(file.name) + '\
+                    <a class="accordian" data-toggle="collapse" style="vertical-align: -webkit-baseline-middle; data-parent="#accordion" href="' + '#' + fn + '"\
+                       aria-expanded="false" aria-controls=' + fn + '>\
+                        ' + file.name + " " + rEFlag(file.name) + rWFlag(file.name) + rMFlag(file.name) + rDButton(file) + '\
                     </a>\
                 </h4>\
             </div>\
-            <div id="cFile" class="panel-collapse collapse transparent" role="tabpanel" aria-labelledby="heading">'
+            <div id=' + fn + ' class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading">'
                 + rErrors(file.name) + rWarnings(file.name) + rMessages(file.name) +
             '</div>';
     return listContent;
@@ -44,7 +44,7 @@ function createContentNode(file) {
 function pp(string) {
     var output = '<ul>';
     for (var i = 0; i < string.length; i++) {
-        output = output + '<li><span style="color:#000000; font-weight: bold">' + string[i][0] + '</span> : ' + string[i][1] + '</li>';
+        output = output + '<span style="color:#000000"><li><span style="font-weight: bold">' + string[i][0] + '</span> : ' + string[i][1] + '</li></span>';
     }
     return output + '</ul>';
 }
@@ -104,5 +104,11 @@ function rMessages(fn) {
         return '<div class="alert alert-success fade in"><h5>Message: </h5> ' + pp(messages[fn]) + '</div>';
     }
     else return '';
+}
+
+function rDButton(file) {
+    return '<a href="#">\
+        <span class="glyphicon glyphicon-download-alt pull-right"></span>\
+    </a>';
 }
 

@@ -128,6 +128,7 @@ function repair(file) {
         //makeZip();
         //download();
         report(root);
+
     };
 
     reader.readAsArrayBuffer(file);

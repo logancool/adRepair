@@ -66,8 +66,6 @@ a {
   padding: 15px;
 }
 
-
-
 .glyphicon-refresh-animate {
   -animation: spin 1s infinite linear;
   font-size: 25px;
@@ -75,10 +73,13 @@ a {
 }
 
 @-webkit-keyframes spin2 {
-  from { -webkit-transform: rotate(0deg);}
-  to { -webkit-transform: rotate(360deg);}
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+  }
 }
-
 
 * {
   box-sizing: border-box;
@@ -88,15 +89,18 @@ a {
 }
 
 #loading {
-  padding-top:50px;
-}
-#rFiles-container{
-  display:none;
   padding-top: 50px;
 }
+
+#rFiles-container {
+  display: none;
+  padding-top: 50px;
+}
+
 #rFiles {
 
 }
+
 .main {
   position: absolute;
   background: grey;
@@ -206,4 +210,23 @@ a {
   padding: 1em;
   color: #333;
   line-height: 1.3;
+}
+
+.panel {
+  background-color: transparent;
+  border: 0;
+  margin-bottom: 0;
+}
+
+.panel-heading .accordian:before {
+  /* symbol for "opening" panels */
+  font-family: 'Glyphicons Halflings'; /* essential for enabling glyphicon */
+  font-size:10px;
+  content: "\e114"; /* adjust as needed, taken from bootstrap.css */
+}
+
+.panel-heading .accordian.collapsed:before {
+  /* symbol for "collapsed" panels */
+  content: "\e080"; /* adjust as needed, taken from bootstrap.css */
+  font-size:10px;
 }
