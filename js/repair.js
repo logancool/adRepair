@@ -6,9 +6,7 @@
 function repair(file) {
 
     //variable holder for repaired zip file list
-    //var roots = [];
     var root = file;
-    var zFN = file.name;
 
     //initial and load file reader
     var reader = new FileReader();
@@ -16,6 +14,8 @@ function repair(file) {
 
         //The list containing all the files in the zip
         var zFList = new JSZip(e.target.result);
+
+        //TODO: better way to check manifest
         var manifestFound = false;
 
         for (var fn in zFList.files) {
@@ -84,15 +84,12 @@ function repair(file) {
                 zFList.remove(file.name);
                 log.error(root, file, "Hidden folder found and removed");
             }
-
-            //Push each file being repaired into an array called roots
-            //roots.push(file);
         }
 
         if (!(manifestFound)){
 
             //find the dimension in the zip file (if there is any)
-            var dim = findManDim(zFN);
+            var dim = findManDim(root.name);
 
             //find the dimension in the html file name (if there is any)
             if (dim == null){
@@ -117,7 +114,6 @@ function repair(file) {
                 //Display Manifest Modal
                 createManModal();
                 $('#manModal').modal('show');
-                alert(1);
             }
         }
 

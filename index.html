@@ -148,7 +148,8 @@
 
     //call inputFiles when files are loaded
     document.getElementById('inputZips').addEventListener('change', inputFiles, false);
-
+    createManModal();
+    $('#manModal').modal('show');
     /**
      * stores the file list and runs the repair
      */

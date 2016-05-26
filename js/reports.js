@@ -25,6 +25,21 @@ var log = {
         messages[root.name].push([file.name, msg]);
     }
 };
+
+/**
+ * Validates the users input for width and height, checking if the values are common
+ * and returning the appropriate warning/error
+ */
+function valManDims(root,file, w, h) {
+    if (!(isIn(w, COMMON_WIDTH))){
+        log.warning(root,file, "Is not a common width but was set.");
+    }
+
+    if (!(isIn(file, h, COMMON_HEIGHT))){
+        log.warning(root, file, "Is not a common height but was set.");
+    }
+}
+
 function createContentNode(file) {
     var fn = removeExtension(file);
     var listContent = '\

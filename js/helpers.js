@@ -111,7 +111,7 @@ function rmSpecialChars(root, file) {
     var wsFN = file.name.split(' ').join('_');
 
     if (wsFN != file.name) {
-        log.message(root, file, "Found and removed whitespace");
+        log.message(root, file, "Found and replaced whitespace with underscore");
     }
 
     var spFN = wsFN.replace(/[^\w.-]+/g, "");
@@ -296,10 +296,13 @@ function createManModal() {
                 .closest('.form-group')
                 .removeClass('has-success')
                 .addClass('has-warning help-block validMessage')
+
             //add message
             var $span = $('<small/>')
                 .attr('data-field', data.field)
+                .attr('class', "warn")
                 .insertAfter(data.element);
+
             // Retrieve the valid message via getOptions()
             var message = data.bv.getOptions(data.field).validMessage;
 
@@ -312,7 +315,7 @@ function createManModal() {
             data.element     // Get the field element
                 .closest('.form-group')     // Get the field parent
                 .removeClass('has-warning help-block validMessage') //remove the warning
-                .addClass('has-success') // add success!
+                .addClass('has-success'); // add success!
         }
 
         //The live value of the users input
@@ -328,20 +331,6 @@ function createManModal() {
             removeWarning(data);
         }
     });
-}
-
-/**
- * Validates the users input for width and height, checking if the values are common
- * and returning the appropriate warning/error
- */
-function valManDims(root,file, w, h) {
-    if (!(isIn(w, COMMON_WIDTH))){
-        log.warning(root,file, "Is not a common width but was set.");
-    }
-
-    if (!(isIn(file, h, COMMON_HEIGHT))){
-        log.warning(root, file, "Is not a common height but was set.");
-    }
 }
 
 //returns true if the value is in the array
