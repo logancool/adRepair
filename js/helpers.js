@@ -1,7 +1,7 @@
 //common dimensions (value)
 var COMMON_WIDTH = [1, 88, 120, 120, 125, 160, 180, 234, 240, 250, 300, 336, 468, 728];
 var COMMON_HEIGHT = [1, 31, 60, 90, 125, 150, 240, 250, 280, 400, 600];
-var noWarning = true;
+var noWarning = [true, true];
 
 // ---- HELPERS -- //
 
@@ -186,7 +186,7 @@ function matchManHTML(root, man, htmlFN) {
     return man.asText();
 }
 
-function findManDim(hFN){
+function findManDim(hFN) {
     var findWH = /([[0-9]+)x([[0-9]+)/;
     var match = findWH.exec(hFN);
     return match;
@@ -288,60 +288,77 @@ function createManModal() {
         }
     });
     // This event will be triggered when the field passes given validator
-    $('#manModal').on('err.field.fv', function(e, data) {
+    $('#manModal').on('err.field.fv', function (e, data) {
         $('.warn[data-field=' + data.field + ']').remove();
+        if (data.field = 'manW') {
+            noWarning[0] = true;
+        }
+        else if (data.field = 'manH') {
+            noWarning[1] = true;
+        }
     });
+
+    // Mark the field as invalid
+    function addWarning(data) {
+        data.element
+            .closest('.form-group')
+            .removeClass('has-success')
+            .addClass('has-warning help-block validMessage')
+
+        //add message
+        var $span = $('<small/>')
+            .attr('data-field', data.field)
+            .attr('class', "warn")
+            .insertAfter(data.element);
+
+        // Retrieve the valid message via getOptions()
+        var message = data.bv.getOptions(data.field).validMessage;
+
+        if (message) {
+            $span.html(message);
+        }
+    }
+
+    function removeWarning(data) {
+        data.element     // Get the field element
+            .closest('.form-group')     // Get the field parent
+            .removeClass('has-warning help-block validMessage') //remove the warning
+            .addClass('has-success'); // add success!
+        $('.warn[data-field=' + data.field + ']').remove();
+    }
 
     // This event will be triggered when the field passes given validator
     $('#manModal').on('success.field.fv', function (e, data) {
-        // Mark the field as invalid
-        function addWarning(data) {
-            data.element
-                .closest('.form-group')
-                .removeClass('has-success')
-                .addClass('has-warning help-block validMessage')
-
-            //add message
-            var $span = $('<small/>')
-                .attr('data-field', data.field)
-                .attr('class', "warn")
-                .insertAfter(data.element);
-
-            // Retrieve the valid message via getOptions()
-            var message = data.bv.getOptions(data.field).validMessage;
-
-            if (message) {
-                $span.html(message);
-            }
-        }
-
-        function removeWarning(data) {
-            data.element     // Get the field element
-                .closest('.form-group')     // Get the field parent
-                .removeClass('has-warning help-block validMessage') //remove the warning
-                .addClass('has-success'); // add success!
-            $('.warn[data-field=' + data.field + ']').remove();
-        }
 
         //The live value of the users input
         var input = parseInt(data.element[0].value);
 
-        //check if there's warnings for either field
-        if ((!(isIn(input, COMMON_WIDTH))) || (!(isIn(input, COMMON_HEIGHT))))  {
-            // The width is not common - add warning
-            //if the warning hasn't displayed
-            if (noWarning){
-                addWarning(data);
-                noWarning = false;
+        //if the user is in width and input is not in common and warning hasn't been displayed
+        if (data.field == 'manW') {
+            if (!(isIn(input, COMMON_WIDTH))) {
+                if (noWarning[0]) {
+                    addWarning(data);
+                    noWarning[0] = false;
+                }
             }
-            //$('.warn').remove();
+            else {
+                removeWarning(data);
+                noWarning[0] = true;
+            }
+        }
+        else if ((data.field == 'manH')) {
+            if (!(isIn(input, COMMON_HEIGHT))){
+                if (noWarning[1]) {
+                    addWarning(data);
+                    noWarning[1] = false;
+                }
+            }
+            else {
+                removeWarning(data);
+                noWarning[1] = true;
+            }
         }
 
-        //reset to green
-        else {
-            removeWarning(data);
-            noWarning = true;
-        }
     });
 }
 
