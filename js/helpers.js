@@ -1,6 +1,7 @@
 //common dimensions (value)
 var COMMON_WIDTH = [1, 88, 120, 120, 125, 160, 180, 234, 240, 250, 300, 336, 468, 728];
 var COMMON_HEIGHT = [1, 31, 60, 90, 125, 150, 240, 250, 280, 400, 600];
+var noWarning = true;
 
 // ---- HELPERS -- //
 
@@ -286,10 +287,9 @@ function createManModal() {
             }
         }
     });
-var noWarning = true;
     // This event will be triggered when the field passes given validator
     $('#manModal').on('err.field.fv', function(e, data) {
-        $('.warn').remove();
+        $('.warn[data-field=' + data.field + ']').remove();
     });
 
     // This event will be triggered when the field passes given validator
@@ -320,6 +320,7 @@ var noWarning = true;
                 .closest('.form-group')     // Get the field parent
                 .removeClass('has-warning help-block validMessage') //remove the warning
                 .addClass('has-success'); // add success!
+            $('.warn[data-field=' + data.field + ']').remove();
         }
 
         //The live value of the users input
@@ -338,7 +339,6 @@ var noWarning = true;
 
         //reset to green
         else {
-            $('.warn').remove();
             removeWarning(data);
             noWarning = true;
         }
