@@ -286,10 +286,14 @@ function createManModal() {
             }
         }
     });
+var noWarning = true;
+    // This event will be triggered when the field passes given validator
+    $('#manModal').on('err.field.fv', function(e, data) {
+        $('.warn').remove();
+    });
 
     // This event will be triggered when the field passes given validator
     $('#manModal').on('success.field.fv', function (e, data) {
-
         // Mark the field as invalid
         function addWarning(data) {
             data.element
@@ -324,11 +328,19 @@ function createManModal() {
         //check if there's warnings for either field
         if ((!(isIn(input, COMMON_WIDTH))) || (!(isIn(input, COMMON_HEIGHT))))  {
             // The width is not common - add warning
-            addWarning(data);
+            //if the warning hasn't displayed
+            if (noWarning){
+                addWarning(data);
+                noWarning = false;
+            }
+            //$('.warn').remove();
         }
+
         //reset to green
         else {
+            $('.warn').remove();
             removeWarning(data);
+            noWarning = true;
         }
     });
 }
