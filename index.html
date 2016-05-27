@@ -111,7 +111,7 @@
 <div class="modal fade" id="manModal" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header"><h4>Manifest Properties</h4></div>
+            <div class="modal-header" id="manHead"><h4>Manifest Properties: </h4></div>
             <div class="modal-body">
                 No manifest file was detected in your adfile. Please enter the width and height for the adfile
                 below:
@@ -120,17 +120,17 @@
                         <div class="form-group col-sm-6">
                             <label class="control-label">Width</label>
                             <input type="text" class="form-control" name="manW"
-                                   placeholder="728" required>
+                                   placeholder='Eg. "728"' required>
                         </div>
 
                         <div class="form-group col-sm-6">
                             <label class="control-label">Height</label>
                             <input type="text" class="form-control" name="manH"
-                                   placeholder="90" required>
+                                   placeholder='Eg. "90"' required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="pull-right btn btn-primary">Submit</button>
+                        <button type="submit" id="manBtn" class="pull-right btn btn-primary">Submit</button>
                     </div>
                 </form>
             </div>
@@ -148,8 +148,8 @@
 
     //call inputFiles when files are loaded
     document.getElementById('inputZips').addEventListener('change', inputFiles, false);
-    createManModal();
-    $('#manModal').modal('show');
+    //createManModal("Example.zip");
+    //$('#manModal').modal('show');
     /**
      * stores the file list and runs the repair
      */

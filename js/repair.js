@@ -112,7 +112,7 @@ function repair(file) {
             }
             else {
                 //Display Manifest Modal
-                createManModal();
+                createManModal(root);
                 $('#manModal').modal('show');
             }
         }

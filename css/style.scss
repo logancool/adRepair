@@ -61,6 +61,13 @@ a {
     content: "\0xe800";
   }
 }
+#manHead {
+  display: inline;
+  border-bottom: 0;
+}
+h4 {
+  display: inline;
+}
 
 #logo {
   padding: 15px;
@@ -173,7 +180,13 @@ a {
 }
 .modal-content {
   overflow: auto;
-  padding-bottom: 15px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+.modal-body {
+  padding:0px;
+  margin-top: 20px;
+  border-top: 1px solid #e5e5e5;
 }
 .btn-primary {
   margin-top:20px;

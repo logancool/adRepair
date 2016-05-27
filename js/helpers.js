@@ -205,32 +205,17 @@ function createManT(hFN, w, h) {
 /**
  * creates the Manifest Modal and hides it
  */
-function createManModal() {
+function createManModal(root) {
     // Get the modal
-    var modal = document.getElementById('qModal');
+    var modal = document.getElementById('manModal');
 
-    // Get the button that opens the modal
-    var btn = document.getElementById("qBtn");
+    // Get the button that submits the information
+    var submit = document.getElementById("manBtn");
 
     // Get the <span> element that closes the modal
     var span = document.getElementsByClassName("close")[0];
 
-    // When the user clicks on the button, open the modal
-    btn.onclick = function () {
-        modal.style.display = "block";
-    };
-
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function () {
-        modal.style.display = "none";
-    };
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function (event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    };
+    $('#manHead').append("<i>  " + root.name + "</i>");
 
     $('#manModal').formValidation({
         framework: 'bootstrap',
