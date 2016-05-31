@@ -104,7 +104,8 @@ function repair(file) {
                 var manT = createManT(file,w,h);
 
                 //create the new file
-                file = zFList.file("manifest.js", manT);
+                file.name = "manifest.js";
+                file = zFList.file(file.name, manT);
 
                 //apply warnings if there's any validation issues
                 valManDims(root, file, w,h);

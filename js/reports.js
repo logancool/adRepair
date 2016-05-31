@@ -32,11 +32,11 @@ var log = {
  */
 function valManDims(root,file, w, h) {
     if (!(isIn(w, COMMON_WIDTH))){
-        log.warning(root,file, "Is not a common width but was set.");
+        log.warning(root,file, '\'' + w + "px' is not a common width but was set.");
     }
 
     if (!(isIn(file, h, COMMON_HEIGHT))){
-        log.warning(root, file, "Is not a common height but was set.");
+        log.warning(root, file, '\'' + h + "px' is not a common height but was set.");
     }
 }
 
@@ -56,8 +56,12 @@ function createContentNode(file) {
             '</div>';
     return listContent;
 }
-
-function pp(string) {
+/**
+ * Converts the string array into a html list
+ * @param string array of issues (warnings, messages, errors)
+ * @returns {string} the formatted list of issues
+ */
+function listPrint(string) {
     var output = '<ul>';
     for (var i = 0; i < string.length; i++) {
         output = output + '<span style="color:#000000"><li><span style="font-weight: bold">' + string[i][0] + '</span> : ' + string[i][1] + '</li></span>';
@@ -66,8 +70,6 @@ function pp(string) {
 }
 
 function report(file) {
-
-    print(errors);
 
     document.getElementById('rFiles').innerHTML = document.getElementById('rFiles').innerHTML + createContentNode(file);
 
@@ -89,14 +91,12 @@ function rEFlag(fn) {
     }
     else return '';
 }
-
 function rWFlag(fn) {
     if (warnings[fn] != null) {
         return '<span class="label label-warning label-as-badge">' + warnings[fn].length + '</span>';
     }
     else return '';
 }
-
 function rMFlag(fn) {
     if (messages[fn] != null) {
         return '<span class="label label-success label-as-badge">' + messages[fn].length + '</span>';
@@ -105,20 +105,19 @@ function rMFlag(fn) {
 }
 function rErrors(fn) {
     if (errors[fn] != null) {
-        return '<div class="alert alert-danger fade in"><h5>Errors: </h5>' + pp(errors[fn]) + '</div>';
+        return '<div class="alert alert-danger fade in"><h5>Errors: </h5>' + listPrint(errors[fn]) + '</div>';
     }
     else return '';
 }
-
 function rWarnings(fn) {
     if (warnings[fn] != null) {
-        return '<div class="alert alert-warning fade in"><h5>Warnings: </h5> ' + pp(warnings[fn]) + '</div>';
+        return '<div class="alert alert-warning fade in"><h5>Warnings: </h5> ' + listPrint(warnings[fn]) + '</div>';
     }
     else return '';
 }
 function rMessages(fn) {
     if (messages[fn] != null) {
-        return '<div class="alert alert-success fade in"><h5>Message: </h5> ' + pp(messages[fn]) + '</div>';
+        return '<div class="alert alert-success fade in"><h5>Message: </h5> ' + listPrint(messages[fn]) + '</div>';
     }
     else return '';
 }
