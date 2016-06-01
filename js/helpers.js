@@ -112,13 +112,13 @@ function rmSpecialChars(root, file) {
     var wsFN = file.name.split(' ').join('_');
 
     if (wsFN != file.name) {
-        log.message(root, file, "Found and replaced whitespace with underscore");
+        log.message(root, file.name, "Found and replaced whitespace with underscore");
     }
 
     var spFN = wsFN.replace(/[^\w.-]+/g, "");
 
     if (spFN != wsFN) {
-        log.message(root, file, "Found and removed special characters");
+        log.message(root, file.name, "Found and removed special characters");
     }
     return spFN;
 }
@@ -206,17 +206,11 @@ function createManT(hFN, w, h) {
  * creates the Manifest Modal and hides it
  */
 function createManModal(root) {
-    // Get the modal
-    var modal = document.getElementById('manModal');
 
-    // Get the button that submits the information
-    var submit = document.getElementById("manBtn");
+    //create the title
+    document.getElementById("manHead").innerHTML = "<h4>Manifest Properties: </h4><i>" + root.name + "</i>";
 
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
-
-    $('#manHead').append("<i>  " + root.name + "</i>");
-
+    //create the validation fields
     $('#manModal').formValidation({
         framework: 'bootstrap',
         icon: {
@@ -272,6 +266,7 @@ function createManModal(root) {
             }
         }
     });
+
     // This event will be triggered when the field passes given validator
     $('#manModal').on('err.field.fv', function (e, data) {
         $('.warn[data-field=' + data.field + ']').remove();
@@ -282,35 +277,6 @@ function createManModal(root) {
             noWarning[1] = true;
         }
     });
-
-    // Mark the field as invalid
-    function addWarning(data) {
-        data.element
-            .closest('.form-group')
-            .removeClass('has-success')
-            .addClass('has-warning help-block validMessage')
-
-        //add message
-        var $span = $('<small/>')
-            .attr('data-field', data.field)
-            .attr('class', "warn")
-            .insertAfter(data.element);
-
-        // Retrieve the valid message via getOptions()
-        var message = data.bv.getOptions(data.field).validMessage;
-
-        if (message) {
-            $span.html(message);
-        }
-    }
-
-    function removeWarning(data) {
-        data.element     // Get the field element
-            .closest('.form-group')     // Get the field parent
-            .removeClass('has-warning help-block validMessage') //remove the warning
-            .addClass('has-success'); // add success!
-        $('.warn[data-field=' + data.field + ']').remove();
-    }
 
     // This event will be triggered when the field passes given validator
     $('#manModal').on('success.field.fv', function (e, data) {
@@ -345,11 +311,43 @@ function createManModal(root) {
         }
 
     });
-}
 
-//returns true if the value is in the array
-function isIn(value, array) {
-    if (array.indexOf(value) != -1) {
+    // Mark the field as invalid
+    function addWarning(data) {
+        data.element
+            .closest('.form-group')
+            .removeClass('has-success')
+            .addClass('has-warning help-block validMessage')
+
+        //add message
+        var $span = $('<small/>')
+            .attr('data-field', data.field)
+            .attr('class', "warn")
+            .insertAfter(data.element);
+
+        // Retrieve the valid message via getOptions()
+        var message = data.bv.getOptions(data.field).validMessage;
+
+        if (message) {
+            $span.html(message);
+        }
+    }
+
+    function removeWarning(data) {
+        data.element     // Get the field element
+            .closest('.form-group')     // Get the field parent
+            .removeClass('has-warning help-block validMessage') //remove the warning
+            .addClass('has-success'); // add success!
+        $('.warn[data-field=' + data.field + ']').remove();
+    }
+}
+/**
+ * checks if there is a window.open in the code
+ * @param file html or js to check
+ * @returns {boolean} true if there is a clicktag, false otherwise
+ */
+function hasExtClickTag(file){
+    if (file.asText().indexOf("clickTag") != -1) {
         return true;
     }
     else {
@@ -357,4 +355,30 @@ function isIn(value, array) {
     }
 }
 
+/**
+ * Finds the exxternal clicktag call and replaces it with myFT.clickTag()
+ * @param file to replace clicktag in
+ */
+function replaceExtClickTag(file) {
+    //TODO: implement clicktag regex match
+}
+
+//returns true if the value is in the array
+function isIn(value, array) {
+    if (array.indexOf(parseInt(value)) != -1) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+/**
+ * zips all the files and downloads them
+ *
+ */
+
+function dwnldAll(){
+    zip(zFList);
+}
 // --- END HELPERS --- //

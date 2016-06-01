@@ -1,22 +1,21 @@
-function makeZip(zFList) {
+function zipAll(zFList) {
 
-    var zip = new JSZip();
-
-    var content = zip.generate({
+    var content = zFList.generate({
         type: "blob"
     });
 
     // see FileSaver.js
-
-    //zipArrayContent.push(content);
-    //zipArrayFilename.push(fileName);
-    //saveAs(content, fileName);
+    saveAs(content, "FT_repaired.zip");
 
 }
 
-function download() {
-    var inputFile = document.getElementById("inputFile");
-    for (var i = 0; i < inputFile.files.length; i++) {
-        saveAs(zipArrayContent[i], zipArrayFilename[i]);
-    }
+function download(fn, zFList) {
+    print(zFList);
+
+    var content = zFList.generate({
+        type: "blob"
+    });
+
+    // see FileSaver.js
+    saveAs(content, fn);
 }

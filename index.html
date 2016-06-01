@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        <button id="dwnldAll" style="display: none" class="navbar-btn btn pull-right" onclick="dwnldAll()">Download All
+        <button id="dwnldAll" style="display: none" class="pull-right navbar-btn btn" onclick="dwnldAll()">Download All
         </button>
     </div>
 
@@ -108,29 +108,29 @@
 </div>
 
 <!-- Manifest Modal Layout -->
-<div class="modal fade" id="manModal" role="dialog">
+<div class="modal fade" id="manModal" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header" id="manHead"><h4>Manifest Properties: </h4></div>
+            <div class="modal-header" id="manHead"></div>
             <div class="modal-body">
-                No manifest file was detected in your adfile. Please enter the width and height for the adfile
+                No manifest file was detected. Please enter the width and height for the adfile
                 below:
                 <form data-toggle="validator" role="form">
                     <div class="form-group">
                         <div class="form-group col-sm-6">
                             <label class="control-label">Width</label>
                             <input type="text" class="form-control" name="manW"
-                                   placeholder='Eg. "728"' required>
+                                   placeholder='728' required>
                         </div>
 
                         <div class="form-group col-sm-6">
                             <label class="control-label">Height</label>
                             <input type="text" class="form-control" name="manH"
-                                   placeholder='Eg. "90"' required>
+                                   placeholder='90' required>
                         </div>
                     </div>
                     <div class="form-group">
-                        <button type="submit" id="manBtn" class="pull-right btn btn-primary">Submit</button>
+                        <button type="submit" id="manBtn" disabled="disabled" class="pull-right btn btn-primary">Submit</button>
                     </div>
                 </form>
             </div>

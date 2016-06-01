@@ -21,13 +21,13 @@ function repair(file) {
         for (var fn in zFList.files) {
 
             var file = zFList.files[fn];
-            var hFN = findHtmlFN(root,zFList);
+            var hFN = findHtmlFN(root, zFList);
 
 
             /*-------BEGIN CHECKS -----*/
             if (isFLA(file)) {
                 zFList.remove(file.name);
-                log.message(root, file, "FLA file found and removed");
+                log.message(root, file.name, "FLA file found and removed");
             }
 
             else if (isHTML(file)) {
@@ -43,7 +43,7 @@ function repair(file) {
 
                     //replace content
                     zFList.remove(file.name);
-                    zFList.file(fn,fc);
+                    zFList.file(fn, fc);
 
                     //reset file pointer
                     file = zFList.files[fn];
@@ -52,18 +52,22 @@ function repair(file) {
 
                 if (!(hasAPI(file))) {
 
-                    log.error(root, file, "Api was not found");
+                    log.error(root, file, "Flashtalking API was not found and was added");
 
                     //reset file content
                     fc = addAPI(file);
 
                     //replace file in list
                     zFList.remove(file.name);
-                    zFList.file(fn,fc);
+                    zFList.file(fn, fc);
 
                     //reset file pointer
                     file = zFList.files[fn];
                     file.name = fn;
+                }
+                if (hasExtClickTag(file)) {
+                    replaceExtClickTag(file);
+                    log.message(root, file.name, "");
                 }
             }
 
@@ -73,7 +77,7 @@ function repair(file) {
                 var fc = matchManHTML(root, file, hFN); //ensure the manifest matches the html filename
 
                 zFList.remove(file.name);
-                zFList.file(fn,fc);
+                zFList.file(fn, fc);
 
                 manifestFound = true;
 
@@ -86,46 +90,69 @@ function repair(file) {
             }
         }
 
-        if (!(manifestFound)){
+        if (!(manifestFound)) {
 
             //find the dimension in the zip file (if there is any)
             var dim = findManDim(root.name);
 
             //find the dimension in the html file name (if there is any)
-            if (dim == null){
+            if (dim == null) {
+                var temp = dim;
                 dim = findManDim(hFN);
+                if (temp != dim) {
+                    root.name = root.name + "_" + dim[1] + "x" + dim[2];
+                    log.message(root, "manifest.js", "Used dimensions '" + dim[1] + " x " + dim[2] + "' from <i>" + hFN + "</i> and appended to the zip's filename.");
+                }
             }
-            if (dim != null){
+            else {
+                log.message(root, "manifest.js", "Used dimensions '" + dim[1] + " x " + dim[2] + "' from the zip's filename");
+            }
+
+            if (dim != null) {
 
                 var w = dim[1];
                 var h = dim[2];
 
                 //create the text
-                var manT = createManT(file,w,h);
+                var manT = createManT(file, w, h);
 
                 //create the new file
+                file = zFList.file("manifest.js", manT);
                 file.name = "manifest.js";
-                file = zFList.file(file.name, manT);
 
                 //apply warnings if there's any validation issues
-                valManDims(root, file, w,h);
+                valManDims(root, file, w, h);
 
             }
             else {
                 //Display Manifest Modal
                 createManModal(root);
                 $('#manModal').modal('show');
+                $('#manModal').submit(function () {
+                    $('#manModal').modal('hide');
+
+                    var w = document.getElementsByName('manW')[0].value;
+                    var h = document.getElementsByName('manH')[0].value;
+
+                    print("w" + w + " h " + h);
+                    //create the text
+                    var manT = createManT(file, w, h);
+
+                    //create the new file
+                    file = zFList.file("manifest.js", manT);
+                    file.name = "manifest.js";
+
+                    //apply warnings if there's any validation issues
+                    valManDims(root, file, w, h);
+                    return false;
+                });
+
+
             }
         }
-
-        //print(messages);
-        //print(warnings);
-        //print(errors);
-
-        /*---FINISH ZIPPING AND ALLOW DOWNLOAD --*/
-        //makeZip();
+        print(zFList);
         //download();
-        report(root);
+        report(root, zFList);
 
     };
 

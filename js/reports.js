@@ -17,12 +17,12 @@ var log = {
         }
         warnings[root.name].push([file.name, message]);
     },
-    message: function (root, file, msg) {
+    message: function (root, fn, msg) {
         //if array is empty, create it
         if (messages[root.name] == null) {
             messages[root.name] = [];
         }
-        messages[root.name].push([file.name, msg]);
+        messages[root.name].push([fn, msg]);
     }
 };
 
@@ -32,27 +32,28 @@ var log = {
  */
 function valManDims(root,file, w, h) {
     if (!(isIn(w, COMMON_WIDTH))){
+        print(w);
         log.warning(root,file, '\'' + w + "px' is not a common width but was set.");
     }
 
-    if (!(isIn(file, h, COMMON_HEIGHT))){
+    if (!(isIn(h, COMMON_HEIGHT))){
         log.warning(root, file, '\'' + h + "px' is not a common height but was set.");
     }
 }
 
-function createContentNode(file) {
-    var fn = removeExtension(file);
+function createContentNode(root, zFList) {
+    var fn = removeExtension(root);
     var listContent = '\
             <div class="panel-heading" role="tab" id="heading">\
                 <h4 class="panel-title">\
                     <a class="accordian" data-toggle="collapse" style="vertical-align: -webkit-baseline-middle; data-parent="#accordion" href="' + '#' + fn + '"\
                        aria-expanded="false" aria-controls=' + fn + '>\
-                        ' + file.name + " " + rEFlag(file.name) + " " + rWFlag(file.name) + " " + rMFlag(file.name) + rDButton(file) + '\
+                        ' + root.name + " " + rEFlag(root.name) + " " + rWFlag(root.name) + " " + rMFlag(root.name) + rDButton(root.name) + '\
                     </a>\
                 </h4>\
             </div>\
             <div id=' + fn + ' class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading">'
-                + rErrors(file.name) + rWarnings(file.name) + rMessages(file.name) +
+                + rErrors(root.name) + rWarnings(root.name) + rMessages(root.name) +
             '</div>';
     return listContent;
 }
@@ -69,10 +70,10 @@ function listPrint(string) {
     return output + '</ul>';
 }
 
-function report(file) {
+function report(root, zFList) {
 
-    document.getElementById('rFiles').innerHTML = document.getElementById('rFiles').innerHTML + createContentNode(file);
-
+    document.getElementById('rFiles').innerHTML = document.getElementById('rFiles').innerHTML + createContentNode(root, zFList);
+    document.getElementById('d' + root.name).addEventListener("click", download(root.name,zFList));
     //stop loading
     document.getElementById('loading').style.display = "none";
 
@@ -122,9 +123,9 @@ function rMessages(fn) {
     else return '';
 }
 
-function rDButton(file) {
+function rDButton(fn) {
     return '<a href="#">\
-        <span class="glyphicon glyphicon-download-alt pull-right"></span>\
+        <span id="d' + fn + '" class="glyphicon glyphicon-download-alt pull-right"></span>\
     </a>';
 }
 
