@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        <button id="dwnldAll" style="display: none" class="pull-right navbar-btn btn" onclick="dwnldAll()">Download All
+        <button id="dwnldAll" style="display: none" class="pull-right navbar-btn btn">Download All
         </button>
     </div>
 
@@ -168,6 +168,9 @@
      */
     function iterateInputList(fileList) {
 
+        //The list containing all the zip files
+        var fList = new JSZip();
+
         //for each file in the list
         for (var i = 0; i < fileList.length; i++) {
 
@@ -190,12 +193,12 @@
                 createManModal();
 
                 //start repair
-                repair(file);
+                fList.file(file.name, repair(file));
             }
-
-            //update download button
-            document.getElementById('dwnldAll').style.display = "block";
         }
+        //update download button
+        document.getElementById('dwnldAll').style.display = "block";
+        document.getElementById('dwnldAll').addEventListener('click', function() {zipAll(fList)});
     }
 
 </script>

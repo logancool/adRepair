@@ -164,6 +164,7 @@ function repair(file) {
         else {
             report(root, zFList);
         }
+        return zFList;
     };
     reader.readAsArrayBuffer(file);
 }

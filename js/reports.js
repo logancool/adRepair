@@ -52,7 +52,7 @@ function createContentNode(root, zFList) {
                     </a>\
                 </h4>\
             </div>\
-            <div id=' + fn + ' class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading">'
+            <div id=' + fn + ' class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading">'
                 + rErrors(root.name) + rWarnings(root.name) + rMessages(root.name) +
             '</div>';
     return listContent;

@@ -177,17 +177,18 @@ function findHtmlFN(root, zFList) {
 function matchManHTML(root, man, htmlFN) {
 
     var manMatch = /"filename".*:.*"(.*)"/gm;
-    var manFN = manMatch.exec(man.asText())[1];
+    var manT = man.asText();
+    var manFN = manMatch.exec(manT)[1];
     if (manFN != null) {
         if (manFN != htmlFN) {
-            man.asText().replace(manFN, htmlFN);
+            manT = man.asText().replace(manFN, htmlFN);
             log.error(root, man, "Manifest filename did not match html filename");
         }
     }
     else {
         log.error(root, man, "The manifest doesn't contain a properly formatted filename.");
     }
-    return man.asText();
+    return manT;
 }
 
 function findManDim(hFN) {
@@ -376,14 +377,5 @@ function isIn(value, array) {
     else {
         return false;
     }
-}
-
-/**
- * zips all the files and downloads them
- *
- */
-
-function dwnldAll(){
-    zip(zFList);
 }
 // --- END HELPERS --- //
