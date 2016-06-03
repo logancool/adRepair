@@ -123,39 +123,48 @@ function repair(file) {
                 //apply warnings if there's any validation issues
                 valManDims(root, file, w, h);
 
+                report(root, zFList);
+
             }
             else {
-                //Display Manifest Modal
-                createManModal(root);
+                //create the title
+                document.getElementById("manHead").innerHTML = "<h4>Manifest Properties: </h4><i>" + root.name + "</i>";
+
                 $('#manModal').modal('show');
+
+                var modalSubmitted = false;
+
                 $('#manModal').submit(function () {
-                    $('#manModal').modal('hide');
+                    if (!(modalSubmitted)) {
+                        $('#manModal').modal('hide');
 
-                    var w = document.getElementsByName('manW')[0].value;
-                    var h = document.getElementsByName('manH')[0].value;
+                        var w = document.getElementsByName('manW')[0].value;
+                        var h = document.getElementsByName('manH')[0].value;
 
-                    print("w" + w + " h " + h);
-                    //create the text
-                    var manT = createManT(file, w, h);
+                        //create the text
+                        var manT = createManT(file, w, h);
 
-                    //create the new file
-                    file = zFList.file("manifest.js", manT);
-                    file.name = "manifest.js";
+                        //create the new file
+                        file = zFList.file("manifest.js", manT);
+                        file.name = "manifest.js";
 
-                    //apply warnings if there's any validation issues
-                    valManDims(root, file, w, h);
-                    return false;
+                        //apply warnings if there's any validation issues
+                        valManDims(root, file, w, h);
+
+                        report(root, zFList);
+
+                        log.message(root, file.name, "Added a manifest file");
+
+                        modalSubmitted = true;
+                    }
+
                 });
-
-
             }
         }
-        print(zFList);
-        //download();
-        report(root, zFList);
-
+        else {
+            report(root, zFList);
+        }
     };
-
     reader.readAsArrayBuffer(file);
 }
 

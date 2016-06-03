@@ -114,13 +114,17 @@ function rmSpecialChars(root, file) {
     if (wsFN != file.name) {
         log.message(root, file.name, "Found and replaced whitespace with underscore");
     }
-
+    var wsFN = file.name.split(' ').join('_');
     var spFN = wsFN.replace(/[^\w.-]+/g, "");
 
     if (spFN != wsFN) {
         log.message(root, file.name, "Found and removed special characters");
     }
     return spFN;
+}
+
+function rmSC(fn){
+    return fn.split(' ').join('_').replace(/[^\w.-]+/g, "");
 }
 
 /**
@@ -205,10 +209,7 @@ function createManT(hFN, w, h) {
 /**
  * creates the Manifest Modal and hides it
  */
-function createManModal(root) {
-
-    //create the title
-    document.getElementById("manHead").innerHTML = "<h4>Manifest Properties: </h4><i>" + root.name + "</i>";
+function createManModal() {
 
     //create the validation fields
     $('#manModal').formValidation({
@@ -267,6 +268,10 @@ function createManModal(root) {
         }
     });
 
+    // This event will be triggered when the field passes given validator
+    $('#manModal').on('init.field.fv', function (e, data) {
+        data.element[0].value = null;
+    });
     // This event will be triggered when the field passes given validator
     $('#manModal').on('err.field.fv', function (e, data) {
         $('.warn[data-field=' + data.field + ']').remove();

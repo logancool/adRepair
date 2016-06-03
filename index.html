@@ -67,7 +67,7 @@
         <button class="navbar-btn btn pull-left" id="qBtn" data-toggle="modal" data-target="#qModal"> Questions
         </button>
         <p class="navbar-text pull-right">© 2016 - Simplicity Marketing Ltd.
-            <a href=" mailto:david.silver@flashtalking.com">david.silver@flashtalking.com</a>
+            <a href=" mailto:david.silver@flashtalking.com;logan.cool@flashtalking.com">Contact</a>
         </p>
     </div>
 </div>
@@ -186,9 +186,15 @@
                 //reset report
                 document.getElementById('rFiles').innerHTML = "";
 
+                //create manifest modal
+                createManModal();
+
                 //start repair
                 repair(file);
             }
+
+            //update download button
+            document.getElementById('dwnldAll').style.display = "block";
         }
     }
 

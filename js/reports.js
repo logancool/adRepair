@@ -42,13 +42,13 @@ function valManDims(root,file, w, h) {
 }
 
 function createContentNode(root, zFList) {
-    var fn = removeExtension(root);
+    var fn = rmSC(removeExtension(root));
     var listContent = '\
             <div class="panel-heading" role="tab" id="heading">\
                 <h4 class="panel-title">\
-                    <a class="accordian" data-toggle="collapse" style="vertical-align: -webkit-baseline-middle; data-parent="#accordion" href="' + '#' + fn + '"\
+                    <a class="accordian collapsed" data-toggle="collapse" style="vertical-align: -webkit-baseline-middle; data-parent="#accordion" href="' + '#' + fn + '"\
                        aria-expanded="false" aria-controls=' + fn + '>\
-                        ' + root.name + " " + rEFlag(root.name) + " " + rWFlag(root.name) + " " + rMFlag(root.name) + rDButton(root.name) + '\
+                        ' + root.name + " " + rEFlag(root.name) + " " + rWFlag(root.name) + " " + rMFlag(root.name) + rDButton(fn) + '\
                     </a>\
                 </h4>\
             </div>\
@@ -72,17 +72,19 @@ function listPrint(string) {
 
 function report(root, zFList) {
 
-    document.getElementById('rFiles').innerHTML = document.getElementById('rFiles').innerHTML + createContentNode(root, zFList);
-    document.getElementById('d' + root.name).addEventListener("click", download(root.name,zFList));
+    // create dropdown node
+    $('#rFiles').append(createContentNode(root, zFList));
+
+    // create download button
+    var fn = rmSC(removeExtension(root));
+    var dBtn = document.getElementById('d' + fn);
+    dBtn.addEventListener("click", function() {download(root.name,zFList)});
+
     //stop loading
     document.getElementById('loading').style.display = "none";
 
     //show the list
     document.getElementById('rFiles-container').style.display = "block";
-
-
-    //update download button
-    document.getElementById('dwnldAll').style.display = "block";
 
 }
 
@@ -122,7 +124,6 @@ function rMessages(fn) {
     }
     else return '';
 }
-
 function rDButton(fn) {
     return '<a href="#">\
         <span id="d' + fn + '" class="glyphicon glyphicon-download-alt pull-right"></span>\
