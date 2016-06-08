@@ -69,11 +69,11 @@ function createManModal(rootFN) {
                         <div class="form-group">\
                             <div class="form-group col-sm-6">\
                                 <label class="control-label">Width</label>\
-                                    <input type="text" class="form-control" name="manW" placeholder=\'728\' required>\
+                                    <input type="text" class="form-control" id="w' + rootFN + '" name="manW" placeholder=\'728\' required>\
                             </div>\
                             <div class="form-group col-sm-6">\
                                 <label class="control-label">Height</label>\
-                                <input type="text" class="form-control" name="manH" placeholder=\'90\' required>\
+                                <input type="text" class="form-control" id="h' + rootFN + '" name="manH" placeholder=\'90\' required>\
                             </div>\
                         </div>\
                         <div class="form-group">\

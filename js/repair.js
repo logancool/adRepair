@@ -146,8 +146,8 @@ function repair(rootFN, file) {
                     if (!(modalSubmitted)) {
                         $('#' + modalID).modal('hide');
 
-                        var h = $('#' + modalID + '[name=\'manH\']');
-                        print(h.val());
+                        var w = document.getElementById('w' + modalID).value;
+                        var h = document.getElementById('h' + modalID).value;
 
                         //create the text
                         var manT = createManT(hFN, w, h);
