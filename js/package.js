@@ -1,12 +1,12 @@
-function zipAll(fList) {
+function zipAll(zList) {
+    for (var i = 0; i < zList.length; i++) {
+        var content = zList[i][1].generate({
+            type: "blob"
+        });
 
-    var content = fList.generate({
-        type: "blob"
-    });
-
-    // see FileSaver.js
-    saveAs(content, "FT_repaired.zip");
-
+        // see FileSaver.js
+        saveAs(content, zList[i][0]);
+    }
 }
 
 function download(fn, zFList) {

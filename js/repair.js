@@ -3,7 +3,7 @@
  * @param file to repair
  * @returns true when finished
  */
-function repair(rootFN, file) {
+function repair(zList, rootFN, file) {
 
     //variable holder for repaired zip file list
     var root = file;
@@ -100,7 +100,7 @@ function repair(rootFN, file) {
                 var temp = dim;
                 dim = findManDim(hFN);
                 if (temp != dim) {
-                    rootFN = rootFN + "_" + dim[1] + "x" + dim[2];
+                    rootFN = removeExtension(rootFN) + "_" + dim[1] + "x" + dim[2] + ".zip";
                     log.message(root, "manifest.js", "Used dimensions '" + dim[1] + " x " + dim[2] + "' from <i>" + hFN + "</i> and appended to the zip's filename.");
                 }
             }
@@ -118,12 +118,13 @@ function repair(rootFN, file) {
 
                 //create the new file
                 file = zFList.file("manifest.js", manT);
-                file.name = "manifest.js";
 
                 //apply warnings if there's any validation issues
                 valManDims(root, file, w, h);
 
                 report(rootFN, root, zFList);
+
+                zList.push([rootFN, zFList]);
 
             }
             else {
@@ -134,8 +135,6 @@ function repair(rootFN, file) {
 
                 //create its formvalidation
                 addManModalVal(modalID);
-
-                print('#' + modalID);
 
                 var modalSubmitted = false;
 
@@ -154,14 +153,15 @@ function repair(rootFN, file) {
 
                         //create the new file
                         file = zFList.file("manifest.js", manT);
-                        file.name = "manifest.js";
 
                         //apply warnings if there's any validation issues
                         valManDims(root, file, w, h);
 
                         report(rootFN, root, zFList);
 
-                        log.message(root, file.name, "Added a manifest file");
+                        zList.push([rootFN, zFList]);
+
+                        log.message(root, "manifest.js", "Added a manifest file");
 
                         modalSubmitted = true;
 
@@ -171,8 +171,9 @@ function repair(rootFN, file) {
         }
         else {
             report(rootFN, root, zFList);
+            zList.push([rootFN, zFList]);
         }
-        //start adding to download list.
+
     };
     reader.readAsArrayBuffer(file);
 }

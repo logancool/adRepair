@@ -138,7 +138,7 @@
     function iterateInputList(fileList) {
 
         //The list containing all the zip files
-        var fList = new JSZip();
+        var zList = [];
 
         //for each file in the list
         for (var i = 0; i < fileList.length; i++) {
@@ -160,13 +160,15 @@
                 var rootFN = rmSpecialChars(file, file);
 
                 //start repair
-                repair(rootFN, file);
+                repair(zList, rootFN, file);
 
             }
         }
+
         //update download button
         document.getElementById('dwnldAll').style.display = "block";
-        document.getElementById('dwnldAll').addEventListener('click', function() {zipAll(fList)});
+        document.getElementById('dwnldAll').addEventListener('click', function() {zipAll(zList)});
+
     }
 
 </script>

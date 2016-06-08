@@ -32,7 +32,6 @@ var log = {
  */
 function valManDims(root, file, w, h) {
     if (!(isIn(w, COMMON_WIDTH))) {
-        print(w);
         log.warning(root, file, '\'' + w + "px' is not a common width but was set.");
     }
 
