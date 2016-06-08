@@ -94,10 +94,10 @@ function addAPI(file) {
  * @param file to remove ext
  * @returns file name without extension
  */
-function removeExtension(file) {
-    var lastDotPosition = file.name.lastIndexOf(".");
-    if (lastDotPosition === -1) return file.name;
-    else return file.name.substr(0, lastDotPosition);
+function removeExtension(fn) {
+    var lastDotPosition = fn.lastIndexOf(".");
+    if (lastDotPosition === -1) return fn;
+    else return fn.substr(0, lastDotPosition);
 }
 
 /**
@@ -210,10 +210,10 @@ function createManT(hFN, w, h) {
 /**
  * creates the Manifest Modal and hides it
  */
-function createManModal() {
+function addManModalVal(rootFN) {
 
     //create the validation fields
-    $('#manModal').formValidation({
+    $('#' + rootFN).formValidation({
         framework: 'bootstrap',
         icon: {
             valid: 'glyphicon glyphicon-ok',
@@ -270,11 +270,7 @@ function createManModal() {
     });
 
     // This event will be triggered when the field passes given validator
-    $('#manModal').on('init.field.fv', function (e, data) {
-        data.element[0].value = null;
-    });
-    // This event will be triggered when the field passes given validator
-    $('#manModal').on('err.field.fv', function (e, data) {
+    $('#' + rootFN).on('err.field.fv', function (e, data) {
         $('.warn[data-field=' + data.field + ']').remove();
         if (data.field = 'manW') {
             noWarning[0] = true;
@@ -285,7 +281,7 @@ function createManModal() {
     });
 
     // This event will be triggered when the field passes given validator
-    $('#manModal').on('success.field.fv', function (e, data) {
+    $('#' + rootFN).on('success.field.fv', function (e, data) {
 
         //The live value of the users input
         var input = parseInt(data.element[0].value);

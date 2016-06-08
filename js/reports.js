@@ -8,7 +8,7 @@ var log = {
         if (errors[root.name] == null) {
             errors[root.name] = [];
         }
-        errors[root.name].push([file.name , message]);
+        errors[root.name].push([file.name, message]);
     },
     warning: function (root, file, message) {
         //if array is empty, create it
@@ -30,19 +30,19 @@ var log = {
  * Validates the users input for width and height, checking if the values are common
  * and returning the appropriate warning/error
  */
-function valManDims(root,file, w, h) {
-    if (!(isIn(w, COMMON_WIDTH))){
+function valManDims(root, file, w, h) {
+    if (!(isIn(w, COMMON_WIDTH))) {
         print(w);
-        log.warning(root,file, '\'' + w + "px' is not a common width but was set.");
+        log.warning(root, file, '\'' + w + "px' is not a common width but was set.");
     }
 
-    if (!(isIn(h, COMMON_HEIGHT))){
+    if (!(isIn(h, COMMON_HEIGHT))) {
         log.warning(root, file, '\'' + h + "px' is not a common height but was set.");
     }
 }
 
 function createContentNode(root, zFList) {
-    var fn = rmSC(removeExtension(root));
+    var fn = rmSC(removeExtension(root.name));
     var listContent = '\
             <div class="panel-heading" role="tab" id="heading">\
                 <h4 class="panel-title">\
@@ -53,9 +53,38 @@ function createContentNode(root, zFList) {
                 </h4>\
             </div>\
             <div id=' + fn + ' class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading">'
-                + rErrors(root.name) + rWarnings(root.name) + rMessages(root.name) +
-            '</div>';
+        + rErrors(root.name) + rWarnings(root.name) + rMessages(root.name) +
+        '</div>';
     return listContent;
+}
+
+function createManModal(rootFN) {
+    var modalContent = '\
+        <div class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" id="' + rootFN + '" data-toggle="modal">\
+            <div class="modal-dialog">\
+                <div class="modal-content">\
+                    <div class="modal-header"><h4>Create manifest.js for: </h4><i>' + rootFN + '.zip</i> </div>\
+                    <div class="modal-body"> No manifest file was detected. Please enter the width and height for the adfile below:\
+                    <form data-toggle="validator" role="form">\
+                        <div class="form-group">\
+                            <div class="form-group col-sm-6">\
+                                <label class="control-label">Width</label>\
+                                    <input type="text" class="form-control" name="manW" placeholder=\'728\' required>\
+                            </div>\
+                            <div class="form-group col-sm-6">\
+                                <label class="control-label">Height</label>\
+                                <input type="text" class="form-control" name="manH" placeholder=\'90\' required>\
+                            </div>\
+                        </div>\
+                        <div class="form-group">\
+                            <button type="submit" id="manBtn" disabled="disabled" class="pull-right btn btn-primary">Submit</button>\
+                        </div>\
+                    </form>\
+                </div>\
+            </div>\
+            </div>\
+        </div>';
+    return modalContent;
 }
 /**
  * Converts the string array into a html list
@@ -70,21 +99,24 @@ function listPrint(string) {
     return output + '</ul>';
 }
 
-function report(root, zFList) {
+function report(rootFN, root, zFList) {
 
     // create dropdown node
     $('#rFiles').append(createContentNode(root, zFList));
 
     // create download button
-    var fn = rmSC(removeExtension(root));
+    var fn = rmSC(removeExtension(root.name));
     var dBtn = document.getElementById('d' + fn);
-    dBtn.addEventListener("click", function() {download(root.name,zFList)});
+    dBtn.addEventListener("click", function () {
+        download(rootFN, zFList)
+    });
 
     //stop loading
     document.getElementById('loading').style.display = "none";
 
     //show the list
     document.getElementById('rFiles-container').style.display = "block";
+
 
 }
 

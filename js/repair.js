@@ -3,7 +3,7 @@
  * @param file to repair
  * @returns true when finished
  */
-function repair(file) {
+function repair(rootFN, file) {
 
     //variable holder for repaired zip file list
     var root = file;
@@ -100,7 +100,7 @@ function repair(file) {
                 var temp = dim;
                 dim = findManDim(hFN);
                 if (temp != dim) {
-                    root.name = root.name + "_" + dim[1] + "x" + dim[2];
+                    rootFN = rootFN + "_" + dim[1] + "x" + dim[2];
                     log.message(root, "manifest.js", "Used dimensions '" + dim[1] + " x " + dim[2] + "' from <i>" + hFN + "</i> and appended to the zip's filename.");
                 }
             }
@@ -114,7 +114,7 @@ function repair(file) {
                 var h = dim[2];
 
                 //create the text
-                var manT = createManT(file, w, h);
+                var manT = createManT(hFN, w, h);
 
                 //create the new file
                 file = zFList.file("manifest.js", manT);
@@ -123,26 +123,34 @@ function repair(file) {
                 //apply warnings if there's any validation issues
                 valManDims(root, file, w, h);
 
-                report(root, zFList);
+                report(rootFN, root, zFList);
 
             }
             else {
-                //create the title
-                document.getElementById("manHead").innerHTML = "<h4>Manifest Properties: </h4><i>" + root.name + "</i>";
 
-                $('#manModal').modal('show');
+                var modalID = removeExtension(rootFN);
+                //create manifest modal
+                $('#modalContainer').append(createManModal(modalID));
+
+                //create its formvalidation
+                addManModalVal(modalID);
+
+                print('#' + modalID);
 
                 var modalSubmitted = false;
 
-                $('#manModal').submit(function () {
-                    if (!(modalSubmitted)) {
-                        $('#manModal').modal('hide');
+                $('#' + modalID).modal('show');
 
-                        var w = document.getElementsByName('manW')[0].value;
-                        var h = document.getElementsByName('manH')[0].value;
+                $('#' + modalID).submit(function () {
+
+                    if (!(modalSubmitted)) {
+                        $('#' + modalID).modal('hide');
+
+                        var h = $('#' + modalID + '[name=\'manH\']');
+                        print(h.val());
 
                         //create the text
-                        var manT = createManT(file, w, h);
+                        var manT = createManT(hFN, w, h);
 
                         //create the new file
                         file = zFList.file("manifest.js", manT);
@@ -151,20 +159,20 @@ function repair(file) {
                         //apply warnings if there's any validation issues
                         valManDims(root, file, w, h);
 
-                        report(root, zFList);
+                        report(rootFN, root, zFList);
 
                         log.message(root, file.name, "Added a manifest file");
 
                         modalSubmitted = true;
-                    }
 
+                    }
                 });
             }
         }
         else {
-            report(root, zFList);
+            report(rootFN, root, zFList);
         }
-        return zFList;
+        //start adding to download list.
     };
     reader.readAsArrayBuffer(file);
 }

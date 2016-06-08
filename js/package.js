@@ -10,7 +10,7 @@ function zipAll(fList) {
 }
 
 function download(fn, zFList) {
-    print(fn);
+
     var content = zFList.generate({
         type: "blob"
     });

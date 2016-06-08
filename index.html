@@ -107,38 +107,7 @@
     </div>
 </div>
 
-<!-- Manifest Modal Layout -->
-<div class="modal fade" id="manModal" role="dialog" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" id="manHead"></div>
-            <div class="modal-body">
-                No manifest file was detected. Please enter the width and height for the adfile
-                below:
-                <form data-toggle="validator" role="form">
-                    <div class="form-group">
-                        <div class="form-group col-sm-6">
-                            <label class="control-label">Width</label>
-                            <input type="text" class="form-control" name="manW"
-                                   placeholder='728' required>
-                        </div>
-
-                        <div class="form-group col-sm-6">
-                            <label class="control-label">Height</label>
-                            <input type="text" class="form-control" name="manH"
-                                   placeholder='90' required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" id="manBtn" disabled="disabled" class="pull-right btn btn-primary">Submit</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-</div>
-</div>
+<div id="modalContainer"></div>
 
 </body>
 
@@ -177,11 +146,9 @@
             //set current file
             var file = fileList[i];
 
-            //remove any special characters in the zipname
-            file.name = rmSpecialChars(file, file);
-
             //confirm is zip before trying to unzip
             if (getFileExt(file) == 'zip') {
+
 
                 //display loading
                 document.getElementById('loading').style.display = "block";
@@ -189,11 +156,12 @@
                 //reset report
                 document.getElementById('rFiles').innerHTML = "";
 
-                //create manifest modal
-                createManModal();
+                //remove any special characters in the zipname
+                var rootFN = rmSpecialChars(file, file);
 
                 //start repair
-                fList.file(file.name, repair(file));
+                repair(rootFN, file);
+
             }
         }
         //update download button
