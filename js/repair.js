@@ -118,7 +118,7 @@ function repair(zList, rootFN, file) {
 
                 //create the new file
                 file = zFList.file("manifest.js", manT);
-
+                file.name = "manifest.js";
                 //apply warnings if there's any validation issues
                 valManDims(root, file, w, h);
 
@@ -153,6 +153,7 @@ function repair(zList, rootFN, file) {
 
                         //create the new file
                         file = zFList.file("manifest.js", manT);
+                        file.name = "manifest.js";
 
                         //apply warnings if there's any validation issues
                         valManDims(root, file, w, h);
@@ -164,6 +165,7 @@ function repair(zList, rootFN, file) {
                         log.message(root, "manifest.js", "Added a manifest file");
 
                         modalSubmitted = true;
+                        noWarning = [true, true];
 
                     }
                 });
