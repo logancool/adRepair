@@ -123,6 +123,11 @@ function rmSpecialChars(root, file) {
     return spFN;
 }
 
+/**
+ * Removes any characters that are not 0-9 or a-z or .,/ in the string
+ * @param fn the filename to reformat
+ * @returns {string} the formmated string
+ */
 function rmSC(fn){
     return fn.split(' ').join('_').replace(/[^\w.-]+/g, "");
 }
@@ -191,12 +196,24 @@ function matchManHTML(root, man, htmlFN) {
     return manT;
 }
 
+/**
+ * Finds any dimensions in the html filename (if there is any)
+ * @param hFN the html filename to check
+ * @returns {Array|{index: number, input: string}} the dimensions as an array (w,h)
+ */
 function findManDim(hFN) {
     var findWH = /([[0-9]+)x([[0-9]+)/;
     var match = findWH.exec(hFN);
     return match;
 }
 
+/**
+ * Creates the text used in the newly created manifest file.
+ * @param hFN the html filename
+ * @param w width to add
+ * @param h height to add
+ * @returns {string} the html text to return
+ */
 function createManT(hFN, w, h) {
 
     var manT = 'FT.manifest({\n"filename": "' +
@@ -365,7 +382,12 @@ function replaceExtClickTag(file) {
     //TODO: implement clicktag regex match
 }
 
-//returns true if the value is in the array
+/**
+ * Checks if the value is in the array
+ * @param value (string/int) to check
+ * @param array of integers (used to list above
+ * @returns {boolean}
+ */
 function isIn(value, array) {
     if (array.indexOf(parseInt(value)) != -1) {
         return true;
@@ -374,4 +396,5 @@ function isIn(value, array) {
         return false;
     }
 }
+
 // --- END HELPERS --- //

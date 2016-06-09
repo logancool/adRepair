@@ -40,7 +40,13 @@ function valManDims(root, file, w, h) {
     }
 }
 
-function createContentNode(root, zFList) {
+/**
+ * Creates the panel box for displaying the files content
+ * @param root the file to display info
+ * @returns {string} the dynamic code block to add to the list
+ */
+
+function createContentNode(root) {
     var fn = rmSC(removeExtension(root.name));
     var listContent = '\
             <div class="panel-heading" role="tab" id="heading">\
@@ -56,13 +62,17 @@ function createContentNode(root, zFList) {
         '</div>';
     return listContent;
 }
-
+/**
+ * Creates the manifest modal code block to be added upon discovering a missing manifest
+ * @param rootFN the file requiring the manifest
+ * @returns {string} the dynamic code block to be displayed after all other node population
+ */
 function createManModal(rootFN) {
     var modalContent = '\
         <div class="modal fade" role="dialog" data-backdrop="static" data-keyboard="false" id="' + rootFN + '" data-toggle="modal">\
             <div class="modal-dialog">\
                 <div class="modal-content">\
-                    <div class="modal-header"><h4>Create manifest.js for: </h4><i>' + rootFN + '.zip</i> </div>\
+                    <div class="modal-header"><div class="ss-compose" style="font-size: 25px; color:#6d6d6d; display: inline; vertical-align: middle;"></div> <div style="display: inline; font-size: 20px; font-weight: bold;">Create manifest.js for: </div><i>' + rootFN + '.zip</i> </div>\
                     <div class="modal-body"> No manifest file was detected. Please enter the width and height for the adfile below:\
                     <form data-toggle="validator" role="form">\
                         <div class="form-group">\
@@ -98,6 +108,12 @@ function listPrint(string) {
     return output + '</ul>';
 }
 
+/**
+ * The report generator that called repeatedly to create the list of content nodes and the download button
+ * @param rootFN the zip file to create the node for
+ * @param root the zip file itself containing its information
+ * @param zFList the JSZip object containing all repaired information
+ */
 function report(rootFN, root, zFList) {
 
     // create dropdown node
@@ -119,6 +135,11 @@ function report(rootFN, root, zFList) {
 
 }
 
+/**
+ * Standard reporting functions that update flags used in the createContentNode function
+ * @param fn
+ * @returns {*} html string to be appended or nothing if there are no issues
+ */
 function rEFlag(fn) {
     if (errors[fn] != null) {
         return '<span class="label label-danger label-as-badge">' + errors[fn].length + '</span>';

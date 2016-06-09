@@ -9,10 +9,9 @@
     <script type="text/javascript" src="js/lib/FileSaver.js"></script>
     <script type="text/javascript" src="js/package.js"></script>
     <script type="text/javascript" src="js/helpers.js"></script>
-    <script src="bower_components/react/react.js"></script>
-    <script src="bower_components/react/react-dom.js"></script>
     <script type="text/javascript" src="js/repair.js"></script>
     <script type="text/javascript" src="js/reports.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenMax.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.3.min.js"
@@ -24,52 +23,50 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/formvalidation/0.6.1/js/framework/bootstrap.js"></script>
 </head>
 
-<body>
+<body style="background-color: #45444A;">
 
 <title>Ad Repair</title>
 
 <div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading" id="pTitle"><b>ad</b>Repair<img class="pull-right" src="img/flashtalkingWelcome.png"/></div>
+        <div class="panel-body">
+            <!-- Body -->
+            <div class="jumbotron vertical-center">
 
-    <!-- Top Logo -->
-    <img id="logo" src="img/ft_logo.jpg"/>
+                <div id="loadContent" class-='row-fluid centered text-center'>
 
-    <!-- Body -->
-    <div class="jumbotron vertical-center">
+                    <label class="btn btn-primary center-block" for="inputZips">BROWSE FOR FILES</label>
+                    <input id="inputZips" type="file" style="display:none" multiple/>
 
-        <div id="loadContent" class-='row-fluid centered text-center'>
+                </div>
 
-            <label class="btn btn-primary center-block" for="inputZips">Browse</label>
-            <input id="inputZips" type="file" style="display:none" multiple/>
+                <div id="loading" style="display: none; text-align: center">
+                    <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
+                </div>
 
-        </div>
+                <div role="tablist" aria-multiselectable="true" id="rFiles-container">
+                    <div class="panel panel-default" id="rFiles">
+                    </div>
+                </div>
 
-        <div id="loading" style="display: none; text-align: center">
-            <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>
-        </div>
-
-        <div role="tablist" aria-multiselectable="true" id="rFiles-container">
-            <div class="panel panel-default" id="rFiles">
+                <button id="dwnldAll" style="display: none" class="pull-right navbar-btn btn">Download All
+                </button>
             </div>
         </div>
+        <div class="panel-footer">
+                <div class="panel-body">
 
-        <button id="dwnldAll" style="display: none" class="pull-right navbar-btn btn">Download All
-        </button>
+                    <div class="ss-help pull-left" id="qBtn" data-toggle="modal" data-target="#qModal">
+                    </div>
+                    <p class="pull-right">© 2016 - Simplicity Marketing Ltd.
+                        <a href=" mailto:david.silver@flashtalking.com;logan.cool@flashtalking.com">Contact</a></p>
+                </div>
+        </div>
     </div>
-
 </div>
 
 
-</div>
-
-<!-- Footer -->
-<div class="navbar navbar-default navbar-fixed-bottom">
-    <div class="container">
-        <button class="navbar-btn btn pull-left" id="qBtn" data-toggle="modal" data-target="#qModal"> Questions
-        </button>
-        <p class="navbar-text pull-right">© 2016 - Simplicity Marketing Ltd.
-            <a href=" mailto:david.silver@flashtalking.com;logan.cool@flashtalking.com">Contact</a>
-        </p>
-    </div>
 </div>
 
 <!-- Questions Modal Layout -->
@@ -81,7 +78,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">About the Tool</h4>
+                <div class="modal-title"><div class="ss-info" id="aboutHeading"></div><div style="font-size: 23px; display: inline;"> About the Tool</div></div>
             </div>
             <div class="modal-body">
                 The Flashtalking Adfile Repair tool performs a series of checks and corrections on your adfile to
@@ -167,7 +164,9 @@
 
         //update download button
         document.getElementById('dwnldAll').style.display = "block";
-        document.getElementById('dwnldAll').addEventListener('click', function() {zipAll(zList)});
+        document.getElementById('dwnldAll').addEventListener('click', function () {
+            zipAll(zList)
+        });
 
     }
 

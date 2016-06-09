@@ -101,7 +101,7 @@ function repair(zList, rootFN, file) {
                 dim = findManDim(hFN);
                 if (temp != dim) {
                     rootFN = removeExtension(rootFN) + "_" + dim[1] + "x" + dim[2] + ".zip";
-                    log.message(root, "manifest.js", "Used dimensions '" + dim[1] + " x " + dim[2] + "' from <i>" + hFN + "</i> and appended to the zip's filename.");
+                    log.message(root, rootFN, "Used dimensions '" + dim[1] + " x " + dim[2] + "' from <i>" + hFN + "</i> and appended to the zip's filename.");
                 }
             }
             else {
@@ -162,10 +162,10 @@ function repair(zList, rootFN, file) {
 
                         zList.push([rootFN, zFList]);
 
-                        log.message(root, "manifest.js", "Added a manifest file");
+                        log.message(root, rootFN, "Added a manifest file");
 
-                        modalSubmitted = true;
-                        noWarning = [true, true];
+
+                        noWarning = [true, true];                  modalSubmitted = true;
 
                     }
                 });
